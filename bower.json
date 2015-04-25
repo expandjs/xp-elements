@@ -1,0 +1,53 @@
+{
+  "name": "xp-components",
+  "license": "BSD-3-Clause",
+  "version": "0.8.0",
+  "description": "This is a collection of expandjs components.",
+  "authors": [
+    "Giuliano Rullo <g.rullo@expandjs.com>",
+    "Maurizio Stefàno <m.stefano@expandjs.com>",
+    "Robert Manolea <r.manolea@expandjs.com>"
+  ],
+  "main": [
+    "xp-components.html"
+  ],
+  "dependencies": {
+    "xp-anchor-state": "ExpandJS/xp-anchor-state",
+    "xp-animation": "ExpandJS/xp-animation",
+    "xp-collapse": "ExpandJS/xp-collapse",
+    "xp-cookie": "ExpandJS/xp-cookie",
+    "xp-device": "ExpandJS/xp-device",
+    "xp-dialog": "ExpandJS/xp-dialog",
+    "xp-disabled-state": "ExpandJS/xp-disabled-state",
+    "xp-doc-page": "ExpandJS/xp-doc-page",
+    "xp-doc-parser": "ExpandJS/xp-doc-parser",
+    "xp-doc-viewer": "ExpandJS/xp-doc-viewer",
+    "xp-embedded-state": "ExpandJS/xp-embedded-state",
+    "xp-focused-state": "ExpandJS/xp-focused-state",
+    "xp-grid": "ExpandJS/xp-grid",
+    "xp-i18n": "ExpandJS/xp-i18n",
+    "xp-icon": "ExpandJS/xp-icon",
+    "xp-iconset": "ExpandJS/xp-iconset",
+    "xp-input-state": "ExpandJS/xp-input-state",
+    "xp-label": "ExpandJS/xp-label",
+    "xp-list": "ExpandJS/xp-list",
+    "xp-markdown": "ExpandJS/xp-markdown",
+    "xp-master-state": "ExpandJS/xp-master-state",
+    "xp-media-query": "ExpandJS/xp-media-query",
+    "xp-meta": "ExpandJS/xp-meta",
+    "xp-notifier": "ExpandJS/xp-notifier",
+    "xp-overlay": "ExpandJS/xp-overlay",
+    "xp-overlay-state": "ExpandJS/xp-overlay-state",
+    "xp-pages": "ExpandJS/xp-pages",
+    "xp-pressed-state": "ExpandJS/xp-pressed-state",
+    "xp-referral": "ExpandJS/xp-referral",
+    "xp-router": "ExpandJS/xp-router",
+    "xp-script": "ExpandJS/xp-script",
+    "xp-selected-state": "ExpandJS/xp-selected-state",
+    "xp-shared": "ExpandJS/xp-shared",
+    "xp-slave-state": "ExpandJS/xp-slave-state",
+    "xp-targeter": "ExpandJS/xp-targeter",
+    "xp-tooltip": "ExpandJS/xp-tooltip",
+    "xp-window": "ExpandJS/xp-window"
+  }
+}
