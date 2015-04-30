@@ -1,8 +1,8 @@
 {
   "name": "xp-elements",
   "license": "BSD-3-Clause",
-  "version": "0.8.4",
-  "description": "This is a collection of expandjs elements.",
+  "version": "0.8.5",
+  "description": "A collection of ExpandJS elements",
   "homepage": "http://www.expandjs.com/elements/xp-elements",
   "authors": [
     "Giuliano Rullo <g.rullo@expandjs.com>",
