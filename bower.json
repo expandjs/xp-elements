@@ -9,6 +9,14 @@
     "Maurizio Stefàno <m.stefano@expandjs.com>",
     "Robert Manolea <r.manolea@expandjs.com>"
   ],
+  "keywords": [
+    "custom elements",
+    "web components",
+    "web app",
+    "html5",
+    "expandjs",
+    "web-components"
+  ],
   "main": [
     "xp-elements.html"
   ],
