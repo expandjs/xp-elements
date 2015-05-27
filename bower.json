@@ -21,12 +21,7 @@
     "xp-elements.html"
   ],
   "ignore": [
-    "**/.*",
-    "bin",
-    "index.js",
-    "lib",
-    "node_modules",
-    "package.json"
+    "**/.*"
   ],
   "dependencies": {
     "xp-anchor-state": "ExpandJS/xp-anchor-state",
