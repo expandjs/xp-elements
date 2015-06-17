@@ -1,0 +1,68 @@
+{
+  "name": "xp-elements",
+  "license": "BSD-3-Clause",
+  "version": "0.9.0",
+  "description": "A collection of ExpandJS elements",
+  "homepage": "http://expandjs.com/elements/xp-elements",
+  "authors": [
+    "Giuliano Rullo <g.rullo@expandjs.com>",
+    "Maurizio Stefàno <m.stefano@expandjs.com>",
+    "Robert Manolea <r.manolea@expandjs.com>"
+  ],
+  "keywords": [
+    "custom elements",
+    "web components",
+    "web app",
+    "html5",
+    "expandjs",
+    "web-components"
+  ],
+  "main": [
+    "xp-elements.html"
+  ],
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "xp-anchor-behavior": "ExpandJS/xp-anchor-behavior",
+    "xp-animation": "ExpandJS/xp-animation",
+    "xp-collapse": "ExpandJS/xp-collapse",
+    "xp-cookie": "ExpandJS/xp-cookie",
+    "xp-device": "ExpandJS/xp-device",
+    "xp-dialog": "ExpandJS/xp-dialog",
+    "xp-doc-page": "ExpandJS/xp-doc-page",
+    "xp-doc-parser": "ExpandJS/xp-doc-parser",
+    "xp-doc-viewer": "ExpandJS/xp-doc-viewer",
+    "xp-embedded-behavior": "ExpandJS/xp-embedded-behavior",
+    "xp-emitter": "ExpandJS/xp-emitter",
+    "xp-focused-behavior": "ExpandJS/xp-focused-behavior",
+    "xp-grid": "ExpandJS/xp-grid",
+    "xp-i18n-behavior": "ExpandJS/xp-i18n-behavior",
+    "xp-icon": "ExpandJS/xp-icon",
+    "xp-iconset": "ExpandJS/xp-iconset",
+    "xp-input-behavior": "ExpandJS/xp-input-behavior",
+    "xp-label": "ExpandJS/xp-label",
+    "xp-list": "ExpandJS/xp-list",
+    "xp-markdown": "ExpandJS/xp-markdown",
+    "xp-master-state": "ExpandJS/xp-master-state",
+    "xp-media-query": "ExpandJS/xp-media-query",
+    "xp-meta": "ExpandJS/xp-meta",
+    "xp-observer": "ExpandJS/xp-observer",
+    "xp-overlay": "ExpandJS/xp-overlay",
+    "xp-overlay-behavior": "ExpandJS/xp-overlay-behavior",
+    "xp-pages": "ExpandJS/xp-pages",
+    "xp-pressed-behavior": "ExpandJS/xp-pressed-behavior",
+    "xp-pubsub-behavior": "ExpandJS/xp-pubsub-behavior",
+    "xp-referral-behavior": "ExpandJS/xp-referral-behavior",
+    "xp-request": "ExpandJS/xp-request",
+    "xp-router": "ExpandJS/xp-router",
+    "xp-schema": "ExpandJS/xp-schema",
+    "xp-script": "ExpandJS/xp-script",
+    "xp-selected-behavior": "ExpandJS/xp-selected-behavior",
+    "xp-shared": "ExpandJS/xp-shared",
+    "xp-slave-state": "ExpandJS/xp-slave-state",
+    "xp-targeter-behavior": "ExpandJS/xp-targeter-behavior",
+    "xp-tooltip": "ExpandJS/xp-tooltip",
+    "xp-window": "ExpandJS/xp-window"
+  }
+}
