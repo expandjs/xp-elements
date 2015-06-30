@@ -59,7 +59,7 @@
     "xp-schema": "ExpandJS/xp-schema#0.9.3",
     "xp-script": "ExpandJS/xp-script#0.9.3",
     "xp-selected-behavior": "ExpandJS/xp-selected-behavior#0.9.3",
-    "xp-shared": "ExpandJS/xp-shared#0.9.3",
+    "xp-shared-behavior": "ExpandJS/xp-shared-behavior#0.9.3",
     "xp-slave-state": "ExpandJS/xp-slave-state#0.9.3",
     "xp-targeter-behavior": "ExpandJS/xp-targeter-behavior#0.9.3",
     "xp-tooltip": "ExpandJS/xp-tooltip#0.9.3",
