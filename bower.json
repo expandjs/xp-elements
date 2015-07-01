@@ -26,6 +26,7 @@
   "dependencies": {
     "xp-anchor-behavior": "ExpandJS/xp-anchor-behavior#0.9.3",
     "xp-animation": "ExpandJS/xp-animation#0.9.3",
+    "xp-array-behavior": "ExpandJS/xp-array-behavior#0.9.3",
     "xp-collapse": "ExpandJS/xp-collapse#0.9.3",
     "xp-cookie": "ExpandJS/xp-cookie#0.9.3",
     "xp-device": "ExpandJS/xp-device#0.9.3",
