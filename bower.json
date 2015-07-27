@@ -3,7 +3,7 @@
   "license": "BSD-3-Clause",
   "version": "0.9.5",
   "description": "A collection of ExpandJS elements",
-  "homepage": "http://expandjs.com/elements/xp-elements",
+  "homepage": "http://expandjs.com/elements",
   "authors": [
     "Giuliano Rullo <g.rullo@expandjs.com>",
     "Maurizio Stefàno <m.stefano@expandjs.com>",
