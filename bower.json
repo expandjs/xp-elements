@@ -2,6 +2,7 @@
   "name": "xp-elements",
   "license": "BSD-3-Clause",
   "version": "0.9.6",
+  "main": "xp-elements.html",
   "description": "A collection of ExpandJS elements",
   "homepage": "http://expandjs.com/elements",
   "authors": [
@@ -16,9 +17,6 @@
     "html5",
     "expandjs",
     "web-components"
-  ],
-  "main": [
-    "xp-elements.html"
   ],
   "ignore": [
     "**/.*"
