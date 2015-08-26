@@ -65,6 +65,7 @@
     "xp-shared-behavior": "ExpandJS/xp-shared-behavior#0.9.8",
     "xp-slave-behavior": "ExpandJS/xp-slave-behavior#0.9.8",
     "xp-targeter-behavior": "ExpandJS/xp-targeter-behavior#0.9.8",
+    "xp-toast-behavior": "ExpandJS/xp-toast-behavior#0.9.8",
     "xp-tooltip": "ExpandJS/xp-tooltip#0.9.8",
     "xp-window": "ExpandJS/xp-window#0.9.8"
   }
