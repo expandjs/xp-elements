@@ -50,6 +50,7 @@
     "xp-media-query": "ExpandJS/xp-media-query#0.9.8",
     "xp-meta": "ExpandJS/xp-meta#0.9.8",
     "xp-multi-select-behavior": "ExpandJS/xp-multi-select-behavior#0.9.8",
+    "xp-object-behavior": "ExpandJS/xp-object-behavior#0.9.8",
     "xp-observer": "ExpandJS/xp-observer#0.9.8",
     "xp-overlay": "ExpandJS/xp-overlay#0.9.8",
     "xp-overlay-behavior": "ExpandJS/xp-overlay-behavior#0.9.8",
