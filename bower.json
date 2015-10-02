@@ -22,7 +22,6 @@
     "**/.*"
   ],
   "dependencies": {
-    "xp-adapter-behavior": "ExpandJS/xp-adapter-behavior#0.9.10",
     "xp-anchor-behavior": "ExpandJS/xp-anchor-behavior#0.9.10",
     "xp-animation": "ExpandJS/xp-animation#0.9.10",
     "xp-array-behavior": "ExpandJS/xp-array-behavior#0.9.10",
