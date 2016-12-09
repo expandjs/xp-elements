@@ -1,0 +1,61 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+This stylesheet is used to stylize a toast element.
+
+@stylesheet xp-toast-styles
+@since 1.0.0
+@category stylesheets
+@description A stylesheet used to stylize a toast element
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-toast-styles
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-toast-styles.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="xp-overlay-styles.html">
+
+<dom-module id="xp-toast-styles">
+
+    <template strip-whitespace>
+
+        <style include="xp-overlay-styles">
+            :host {
+                margin: 0;
+                transition: transform 0.5s, visibility 0.5s;
+            }
+
+            :host([showed]) {
+                transform: translate(0, 0);
+            }
+
+            :host(:not([showed])) {
+                opacity: 1 !important;
+            }
+
+            :host .wrapper {
+                opacity: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                transition: opacity 1s;
+                white-space: nowrap;
+            }
+
+            :host([label=""]) .wrapper,
+            :host(:not([label])) .wrapper,
+            :host(:not([showed])) .wrapper {
+                opacity: 0 !important;
+            }
+        </style>
+
+    </template>
+
+</dom-module>

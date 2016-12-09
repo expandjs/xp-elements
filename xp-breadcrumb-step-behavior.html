@@ -1,0 +1,83 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add breadcrumb step capabilities on a web component.
+
+@behavior xp-breadcrumb-step-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add breadcrumb step capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-breadcrumb-step-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-breadcrumb-step-behavior.html
+
+@behavior xp-master-slave-behavior /bower_components/xp-elements/xp-master-slave-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-master-slave-behavior.html">
+
+<script>
+    Polymer.XPBreadcrumbStepBehaviorImp = {
+
+        // CLASSES
+        classes: ['breadcrumb-step'],
+
+        /*********************************************************************/
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * If set to true, the step is active.
+             *
+             * @attribute active
+             * @type boolean
+             * @default false
+             */
+            active: {
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * The master breadcrumb.
+             *
+             * @attribute breadcrumb
+             * @type Element
+             * @readonly
+             */
+            breadcrumb: {
+                master: '.breadcrumb',
+                readOnly: true,
+                value: null
+            },
+
+            /**
+             * The step's label.
+             *
+             * @attribute label
+             * @type string
+             */
+            label: {
+                reflectToAttribute: true,
+                type: String
+            }
+        }
+    };
+
+    Polymer.XPBreadcrumbStepBehavior = [
+        Polymer.XPMasterSlaveBehavior,
+        Polymer.XPBreadcrumbStepBehaviorImp
+    ];
+</script>

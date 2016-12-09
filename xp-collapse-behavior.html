@@ -1,0 +1,279 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add collapse capabilities on a web component.
+
+@behavior xp-collapse-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add collapse capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-collapse-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-collapse-behavior.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<script>
+    Polymer.XPCollapseBehaviorImp = {
+
+        /**
+         * Fired when the collapsed state changes.
+         *
+         * @event xp-collapse
+         * @param {boolean} isCollapsed
+         * @bubbles
+         */
+
+        /*********************************************************************/
+
+        /**
+         * Adds the collapsed state.
+         *
+         * @method collapse
+         */
+        collapse() {
+            if (this.collapsible) { this.collapsed = true; }
+        },
+
+        /**
+         * Removes the collapsed state.
+         *
+         * @method expand
+         */
+        expand() {
+            if (this.collapsible) { this.collapsed = false; }
+        },
+
+        /**
+         * Toggles the collapsed state.
+         *
+         * @method toggle
+         */
+        toggle() {
+            if (this.collapsible) { this.collapsed = !this.collapsed; }
+        },
+
+        /*********************************************************************/
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * If set to true, the collapse will be animated.
+             *
+             * @attribute animatable
+             * @type boolean
+             */
+            animatable: {
+                type: Boolean
+            },
+
+            /**
+             * If set to true, the collapse animation will be a slide instead of a compress.
+             *
+             * @attribute backward
+             * @type boolean
+             * @default false
+             */
+            backward: {
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * If set to true, the element is collapsed.
+             *
+             * @attribute collapsed
+             * @type boolean
+             * @default false
+             * @notifies
+             */
+            collapsed: {
+                notify: true,
+                observer: '__collapsedChanged',
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * The collapser element.
+             *
+             * @attribute collapser
+             * @type Element
+             * @readonly
+             */
+            collapser: {
+                readOnly: true,
+                selector: '.collapsible'
+            },
+
+            /**
+             * If set to true, the element is collapsible.
+             *
+             * @attribute collapsible
+             * @type boolean
+             * @default false
+             */
+            collapsible: {
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * If set to true, the collapse animation is running.
+             *
+             * @attribute collapsing
+             * @type boolean
+             * @default false
+             * @readonly
+             */
+            collapsing: {
+                readOnly: true,
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * The animation's duration.
+             *
+             * @attribute duration
+             * @type number
+             * @default 330
+             */
+            duration: {
+                type: Number,
+                value: 330
+            },
+
+            /**
+             * The animation's easing.
+             *
+             * @attribute easing
+             * @type string
+             * @default "ease"
+             */
+            easing: {
+                type: String,
+                value: 'ease'
+            },
+
+            /**
+             * If set to true, the element is hidden.
+             *
+             * @attribute empty
+             * @type boolean
+             * @default false
+             * @readonly
+             */
+            empty: {
+                readOnly: true,
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            }
+        },
+
+        /*********************************************************************/
+
+        // OBSERVER
+        __collapsedChanged() {
+
+            // Checking
+            if (!this.collapser || !this.collapsible) { return; }
+
+            // Let
+            let animatable = this.animatable,
+                backward   = this.backward,
+                collapsed  = this.collapsed,
+                collapsing = this.collapsing,
+                duration   = this.duration,
+                easing     = this.easing;
+
+            // Frame 1
+            let prepareAnimation = () => {
+
+                // Let
+                let opt = {
+                    height: -this.collapser.scrollHeight
+                };
+
+                // Styling
+                if (!collapsing) { this.collapser.style.transition   = `margin 0s`; }
+                if (!collapsing) { this.collapser.style.marginTop    = backward ? (collapsed ? 0 : `${opt.height}px`) : ``; }
+                if (!collapsing) { this.collapser.style.marginBottom = backward ? `` : (collapsed ? 0 : `${opt.height}px`); }
+
+                // Returning
+                return opt;
+            };
+
+            // Frame 2
+            let executeAnimation = (opt) => {
+
+                // Styling
+                this.collapser.style.transition   = `margin ${duration / 1000}s ${easing}`;
+                this.collapser.style.marginTop    = backward ? (collapsed ? `${opt.height}px` : 0) : ``;
+                this.collapser.style.marginBottom = backward ? `` : (collapsed ? `${opt.height}px` : 0);
+
+                // Debouncing
+                this.debounce('collapsing', this.ensure.bind(this, 'collapsing', false), duration);
+            }
+
+            // Firing
+            this.fire('xp-collapse', {isCollapsed: collapsed});
+
+            // Ensuring
+            this.ensure('collapsing', true);
+
+            // Translating
+            if (!animatable) { executeAnimation(prepareAnimation()); return; }
+
+            // Animating
+            requestAnimationFrame(() => { let opt = prepareAnimation(); requestAnimationFrame(() => executeAnimation(opt)); });
+        },
+
+        /*********************************************************************/
+
+        // LISTENER
+        attached() {
+
+            // Ensuring
+            if (!XP.isDefined(this.animatable)) { this.ensure('animatable', true); }
+        },
+
+        // LISTENER
+        mutated() {
+
+            // Ensuring
+            this.ensure('empty', !XP.hasChildren(Polymer.dom(this)));
+        },
+
+        // LISTENER
+        ready() {
+
+            // Observing
+            Polymer.dom(this).observeNodes(Polymer.XPCollapseBehaviorImp.mutated.bind(this));
+        }
+    };
+
+    Polymer.XPCollapseBehavior = [
+        Polymer.XPBaseBehavior,
+        Polymer.XPCollapseBehaviorImp
+    ];
+</script>

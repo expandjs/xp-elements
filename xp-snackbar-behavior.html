@@ -1,0 +1,90 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add snackbar capabilities on a web component.
+
+@behavior xp-snackbar-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add snackbar capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-snackbar-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-snackbar-behavior.html
+
+@behavior xp-toast-behavior /bower_components/xp-elements/xp-toast-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-toast-behavior.html">
+
+<script>
+    Polymer.XPSnackbarBehaviorImp = {
+
+        // CLASSES
+        classes: ['snackbar'],
+
+        /*********************************************************************/
+
+        /**
+         * Fired when the action is clicked.
+         *
+         * @event xp-activate
+         * @param {Element} target
+         * @param {*} data
+         * @bubbles
+         * @cancelable
+         */
+
+        /*********************************************************************/
+
+        // LISTENERS
+        listeners: {
+            'xp-activate': '__handleAction'
+        },
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * The snackbar's button's label.
+             *
+             * @attribute button
+             * @type string
+             */
+            button: {
+                reflectToAttribute: true,
+                type: String
+            }
+        },
+
+        /*********************************************************************/
+
+        // HANDLER
+        __handleAction(event) {
+
+            // Checking
+            if (this.firer(event) === this) { return; }
+
+            // Callback
+            if (XP.isFunction(this.callback)) { this.callback(); }
+            if (XP.isString(this.callback, true) && this.domHost) { this.domHost[this.callback](); }
+
+            // Firing
+            if (!this.refire(event, event.type).defaultPrevented) { this.hide(); }
+        }
+    };
+
+    Polymer.XPSnackbarBehavior = [
+        Polymer.XPToastBehavior,
+        Polymer.XPSnackbarBehaviorImp
+    ];
+</script>

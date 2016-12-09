@@ -1,0 +1,172 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to load a script asynchronously.
+
+@element xp-script
+@since 1.0.0
+@category functionality
+@description A web component used to load a script asynchronously
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-script
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-script.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-script/xp-script.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<dom-module id="xp-script">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-script',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPBaseBehavior
+            ],
+
+            // CLASSES
+            classes: ['script'],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when an error is received.
+             *
+             * @event xp-script-error
+             * @param {Object} error
+             * @bubbles
+             */
+
+            /**
+             * Fired when the script is loaded.
+             *
+             * @event xp-script-load
+             * @param {*} data
+             * @bubbles
+             */
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The name of the callback to be executed in a JSONP request.
+                 *
+                 * @attribute callback
+                 * @type string
+                 */
+                callback: {
+                    type: String
+                },
+
+                /**
+                 * The received data.
+                 *
+                 * @attribute data
+                 * @type *
+                 * @notifies
+                 * @readonly
+                 */
+                data: {
+                    notify: true,
+                    readOnly: true
+                },
+
+                /**
+                 * The received error.
+                 *
+                 * @attribute error
+                 * @type Object
+                 * @notifies
+                 * @readonly
+                 */
+                error: {
+                    notify: true,
+                    readOnly: true
+                },
+
+                /**
+                 * If set to true, the script is loaded.
+                 *
+                 * @attribute loaded
+                 * @type boolean
+                 * @default false
+                 * @notifies
+                 * @readonly
+                 */
+                loaded: {
+                    notify: true,
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The script's src.
+                 *
+                 * @attribute src
+                 * @type string
+                 */
+                src: {
+                    observer: '_srcChanged',
+                    type: String
+                }
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _srcChanged() {
+
+                // Checking
+                if (!this.src || this.state === 'pending') { return; }
+
+                // Loading
+                new XPScript({src: this.src, callback: this.callback}, this._handleLoad.bind(this));
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleLoad(error, data) {
+
+                // Ensuring
+                this.ensure('error', XP.toDefined(error));
+                this.ensure('data', XP.toDefined(data));
+                this.ensure('loaded', !error);
+
+                // Firing
+                this.fire(`xp-script-${error ? `error` : `load`}`, error ? {error: this.error} : {data: this.data});
+            }
+        });
+    </script>
+
+</dom-module>

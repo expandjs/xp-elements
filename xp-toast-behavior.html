@@ -1,0 +1,129 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add toast capabilities on a web component.
+
+@behavior xp-toast-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add toast capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-toast-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-toast-behavior.html
+
+@behavior xp-overlay-behavior /bower_components/xp-elements/xp-overlay-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-overlay-behavior.html">
+
+<script>
+    (function () {
+
+        // Let
+        let queue = [];
+
+        // Prototype
+        Polymer.XPToastBehaviorImp = {
+
+            // CLASSES
+            classes: ['toast'],
+
+            /*********************************************************************/
+
+            /**
+             * Aligns the toast.
+             *
+             * @method align
+             * @returns {Element}
+             */
+            align() {
+
+                // Override
+                return this;
+            },
+
+            /**
+             * Hides the toast.
+             *
+             * @method hide
+             */
+            hide() {
+
+                // Checking
+                if (this !== queue[0]) { return; }
+
+                // Super
+                Polymer.XPOverlayBehaviorImp.hide.apply(this, arguments);
+
+                // Shifting
+                queue.shift();
+
+                // Showing next
+                if (queue[0]) { queue[0].show(); }
+            },
+
+            /**
+             * Adds the toast to the showing queue.
+             *
+             * @method show
+             */
+            show() {
+
+                // Appending
+                XP.append(queue, this);
+
+                // Checking
+                if (this !== queue[0]) { return; }
+
+                // Super
+                Polymer.XPOverlayBehaviorImp.show.apply(this, arguments);
+
+                // Hiding
+                this.debounce('hiding', this.hide.bind(this), this.timeout);
+            },
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The toast's label.
+                 *
+                 * @attribute label
+                 * @type string
+                 */
+                label: {
+                    reflectToAttribute: true,
+                    type: String
+                },
+
+                /**
+                 * The toast's timeout.
+                 *
+                 * @attribute timeout
+                 * @type number
+                 */
+                timeout: {
+                    type: Number,
+                    value: 3000
+                }
+            }
+        };
+
+        Polymer.XPToastBehavior = [
+            Polymer.XPOverlayBehavior,
+            Polymer.XPToastBehaviorImp
+        ];
+    }());
+</script>

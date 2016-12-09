@@ -1,0 +1,143 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add submenu capabilities on a web component.
+
+@behavior xp-submenu-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add submenu capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-submenu-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-submenu-behavior.html
+
+@behavior xp-master-slave-behavior /bower_components/xp-elements/xp-master-slave-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-master-slave-behavior.html">
+
+<script>
+    Polymer.XPSubmenuBehaviorImp = {
+
+        // CLASSES
+        classes: ['submenu'],
+
+        /*********************************************************************/
+
+        /**
+         * Hides the submenu.
+         *
+         * @method hide
+         */
+        hide() {
+            this.showed = false;
+        },
+
+        /**
+         * Shows the submenu.
+         *
+         * @method show
+         */
+        show() {
+            this.showed = true;
+        },
+
+        /**
+         * Toggles the tooltip.
+         *
+         * @method toggle
+         */
+        toggle() {
+            this.showed = !this.showed;
+        },
+
+        /*********************************************************************/
+
+        // OBSERVERS
+        observers: [
+            '__showedChanged(showed)'
+        ],
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * The master menu.
+             *
+             * @attribute menu
+             * @type Element
+             * @readonly
+             */
+            menu: {
+                master: '.menu',
+                readOnly: true,
+                value: null
+            },
+
+            /**
+             * If set to true, the submenu is showed.
+             *
+             * @attribute showed
+             * @type boolean
+             * @default false
+             * @notifies
+             */
+            showed: {
+                notify: true,
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * The slave submenus.
+             *
+             * @attribute submenus
+             * @type Array
+             * @readonly
+             */
+            submenus: {
+                readOnly: true,
+                slaves: '.submenu',
+                value() { return []; }
+            },
+
+            /**
+             * The master submenu.
+             *
+             * @attribute supermenu
+             * @type Element
+             * @readonly
+             */
+            supermenu: {
+                master: '.submenu',
+                readOnly: true,
+                value: null
+            }
+        },
+
+        /*********************************************************************/
+
+        // OBSERVER
+        __showedChanged() {
+
+            // Hiding
+            if (!this.showed) { Array.from(this.submenus || []).forEach(submenu => submenu.hide()); }
+        }
+    };
+
+    Polymer.XPSubmenuBehavior = [
+        Polymer.XPMasterSlaveBehavior,
+        Polymer.XPSubmenuBehaviorImp
+    ];
+</script>

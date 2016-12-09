@@ -1,0 +1,252 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to manipulate cookies.
+
+@element xp-cookie
+@since 1.0.0
+@category functionality
+@description A web component used to manipulate cookies
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-cookie
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-cookie.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<script src="../cookies/dist/cookies.min.js"></script>
+
+<dom-module id="xp-cookie">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-cookie',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPBaseBehavior
+            ],
+
+            // CLASSES
+            classes: ['cookie'],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when the value changes.
+             *
+             * @event xp-cookie-change
+             * @param {string} name
+             * @param {string} value
+             * @bubbles
+             */
+
+            /**
+             * Fired when the cookie is loaded.
+             *
+             * @event xp-cookie-load
+             * @param {string} name
+             * @param {string} value
+             * @bubbles
+             */
+
+            /*********************************************************************/
+
+            /**
+             * Expires the cookie.
+             *
+             * @method expire
+             */
+            expire() {
+
+                // Expiring
+                if (this.name) { Cookies.expire(this.name, {domain: this.domain, path: this.path}); }
+            },
+
+            /**
+             * Sets the cookie's value.
+             *
+             * @method setValue
+             * @param {string} value
+             */
+            setValue(value) {
+
+                // Setting
+                if (this.name) { Cookies.set(this.name, value, {domain: XP.toUseful(this.domain), expires: XP.toUseful(this.expires), path: this.path, secure: this.secure}); }
+
+                // Refreshing
+                if (this.name) { this.wait(() => this.instances.forEach(instance => instance._nameChanged()); }
+            },
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The cookie's domain.
+                 *
+                 * @attribute domain
+                 * @type string
+                 */
+                domain: {
+                    type: String
+                },
+
+                /**
+                 * The cookie's expiration date.
+                 *
+                 * @attribute expires
+                 * @type number | string
+                 */
+                expires: {
+                    type: String
+                },
+
+                /**
+                 * If set to true, the cookie is loaded.
+                 *
+                 * @attribute loaded
+                 * @type boolean
+                 * @default false
+                 * @notifies
+                 * @readonly
+                 */
+                loaded: {
+                    notify: true,
+                    observer: '_loadedChanged',
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The cookie's name.
+                 *
+                 * @attribute name
+                 * @type string
+                 */
+                name: {
+                    observer: '_nameChanged',
+                    reflectToAttribute: true,
+                    type: String
+                },
+
+                /**
+                 * The cookie's path.
+                 *
+                 * @attribute path
+                 * @type string
+                 * @default "/"
+                 */
+                path: {
+                    type: String,
+                    value: '/'
+                },
+
+                /**
+                 * If set to true, the cookie will work via https.
+                 *
+                 * @attribute secure
+                 * @type boolean
+                 * @default false
+                 */
+                secure: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The cookie's value.
+                 *
+                 * @attribute value
+                 * @type string
+                 * @notifies
+                 * @readonly
+                 */
+                value: {
+                    notify: true,
+                    observer: '_valueChanged',
+                    readOnly: true,
+                    type: String
+                }
+            },
+
+            /**
+             * The list of instances.
+             *
+             * @property instances
+             * @type Array
+             * @default []
+             * @readonly
+             */
+            instances: [],
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _loadedChanged() {
+
+                // Firing
+                this.fire('xp-cookie-load', {name: this.name, value: this.value});
+            },
+
+            // OBSERVER
+            _nameChanged() {
+
+                // Ensuring
+                this.ensure('loaded', !!this.name);
+                this.ensure('value', (this.name && Cookies.get(this.name)) || '');
+            },
+
+            // OBSERVER
+            _valueChanged() {
+
+                // Firing
+                this.fire('xp-cookie-change', {name: this.name, value: this.value});
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            attached() {
+
+                // Pushing
+                this.push('instances',this);
+            },
+
+            // LISTENER
+            detached() {
+
+                // Pulling
+                this.pull('instances',this);
+            }
+        });
+    </script>
+
+</dom-module>

@@ -1,0 +1,129 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add spin capabilities on a web component.
+
+@behavior xp-spinner-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add spin capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-spinner-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-spinner-behavior.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<script>
+    Polymer.XPSpinnerBehaviorImp = {
+
+        // CLASSES
+        classes: ['spinner'],
+
+        /*********************************************************************/
+
+        /**
+         * Fired on hide.
+         *
+         * @event xp-hide
+         * @bubbles
+         */
+
+        /**
+         * Fired on show.
+         *
+         * @event xp-show
+         * @bubbles
+         */
+
+        /*********************************************************************/
+
+        /**
+         * Hides the spinner.
+         *
+         * @method hide
+         */
+        hide() {
+            this.showed = false;
+        },
+
+        /**
+         * Shows the spinner.
+         *
+         * @method show
+         */
+        show() {
+            this.showed = true;
+        },
+
+        /**
+         * Toggles the spinner.
+         *
+         * @method toggle
+         */
+        toggle() {
+            this.showed = !this.showed;
+        },
+
+        /*********************************************************************/
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * If set to true, the spinner is vertically centered.
+             *
+             * @attribute auto-center
+             * @type boolean
+             * @default false
+             */
+            autoCenter: {
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * If set to true, the spinner is visible.
+             *
+             * @attribute showed
+             * @type boolean
+             * @default false
+             * @notifies
+             */
+            showed: {
+                notify: true,
+                observer: '__showedChanged',
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            }
+        },
+
+        /*********************************************************************/
+
+        // OBSERVER
+        __showedChanged() {
+
+            // Firing
+            if (this.isAttached) { this.fire(this.showed ? 'xp-show' : 'xp-hide'); }
+        }
+    };
+
+    Polymer.XPSpinnerBehavior = [
+        Polymer.XPBaseBehavior,
+        Polymer.XPSpinnerBehaviorImp
+    ];
+</script>

@@ -1,0 +1,172 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A stylesheet used to stylize a markdown element.
+
+@stylesheet xp-markdown-styles
+@since 1.0.0
+@category stylesheets
+@description A stylesheet used to stylize a markdown element
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-markdown-styles
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-markdown-styles.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="xp-markdown-styles">
+
+    <template strip-whitespace>
+
+        <style>
+
+            :host .markdown code[class*="language-"],
+            :host .markdown pre[class*="language-"] {
+                color: black;
+                direction: ltr;
+                font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+                -webkit-hyphens: none;
+                -moz-hyphens: none;
+                hyphens: none;
+                line-height: 1.5;
+                -moz-tab-size: 4;
+                -o-tab-size: 4;
+                tab-size: 4;
+                text-align: left;
+                text-shadow: 0 1px white;
+                white-space: pre;
+                word-break: normal;
+                word-spacing: normal;
+                word-wrap: normal;
+            }
+
+            :host .markdown pre[class*="language-"]::-moz-selection,
+            :host .markdown pre[class*="language-"]::selection,
+            :host .markdown pre[class*="language-"] ::-moz-selection,
+            :host .markdown pre[class*="language-"] ::selection,
+            :host .markdown code[class*="language-"]::-moz-selection,
+            :host .markdown code[class*="language-"]::selection,
+            :host .markdown code[class*="language-"] ::-moz-selection,
+            :host .markdown code[class*="language-"] ::selection {
+                background: #B3D4FC;
+                text-shadow: none;
+            }
+
+            :host .markdown pre {
+                background: #F5F2F0;
+                font-size: 14px;
+                font-weight: 400;
+                letter-spacing: 0.01em;
+                line-height: 20px;
+                margin: .5em 0;
+                overflow-x: scroll;
+                overflow-y: auto;
+                padding: 16px 24px;
+            }
+
+            :host .markdown :not(pre) > code[class*="language-"] {
+                background: #F5F2F0;
+                border-radius: 0.3em;
+                padding: 0.1em;
+            }
+
+            :host .markdown li > code,
+            :host .markdown p > code {
+                background: hsla(24, 20%, 95%, 1);
+                padding: 0 4px;
+            }
+
+            :host .markdown .token.cdata,
+            :host .markdown .token.comment,
+            :host .markdown .token.doctype,
+            :host .markdown .token.prolog {
+                color: #708090;
+            }
+
+            :host .markdown .token.punctuation {
+                color: #999999;
+            }
+
+            :host .markdown .namespace {
+                opacity: 0.7;
+            }
+
+            :host .markdown .token.boolean,
+            :host .markdown .token.constant,
+            :host .markdown .token.deleted,
+            :host .markdown .token.number,
+            :host .markdown .token.property,
+            :host .markdown .token.symbol,
+            :host .markdown .token.tag {
+                color: #990055;
+            }
+
+            :host .markdown .token.attr-name,
+            :host .markdown .token.builtin,
+            :host .markdown .token.char,
+            :host .markdown .token.inserted,
+            :host .markdown .token.selector,
+            :host .markdown .token.string {
+                color: #669900;
+            }
+
+            :host .markdown .token.entity,
+            :host .markdown .token.operator,
+            :host .markdown .token.url,
+            :host .markdown .language-css .token.string,
+            :host .markdown .style .token.string {
+                color: #A67F59;
+                background: hsla(0, 0%, 100%, .5);
+            }
+
+            :host .markdown .token.atrule,
+            :host .markdown .token.attr-value,
+            :host .markdown .token.keyword {
+                color: #0077AA;
+            }
+
+            :host .markdown .token.function {
+                color: #DD4A68;
+            }
+
+            :host .markdown .token.important,
+            :host .markdown .token.regex,
+            :host .markdown .token.variable {
+                color: #EE9900;
+            }
+
+            :host .markdown .token.bold,
+            :host .markdown .token.important {
+                font-weight: bold;
+            }
+
+            :host .markdown .token.italic {
+                font-style: italic;
+            }
+
+            :host .markdown .token.entity {
+                cursor: help;
+            }
+
+            /* PRINT */
+
+            @media print {
+
+                :host .markdown pre[class*="language-"],
+                :host .markdown code[class*="language-"] {
+                    text-shadow: none;
+                }
+            }
+        </style>
+
+    </template>
+
+</dom-module>

@@ -1,0 +1,76 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to display a collapsible box.
+
+@element xp-collapse
+@since 1.0.0
+@category containers
+@description A web component used to display a collapsible box
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-collapse
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-collapse.html
+
+@behavior xp-collapse-behavior /bower_components/xp-elements/xp-collapse-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-elements/xp-collapse-behavior.html">
+<link rel="import" href="../xp-elements/xp-collapse-styles.html">
+
+<dom-module id="xp-collapse">
+
+    <template strip-whitespace>
+
+        <style include="xp-collapse-styles"></style>
+
+        <div class="wrapper">
+            <div class="collapsible">
+                <slot></slot>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-collapse',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPCollapseBehavior
+            ],
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * If set to true, the element is collapsible.
+                 *
+                 * @attribute collapsible
+                 * @type boolean
+                 * @default true
+                 */
+                collapsible: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: true
+                }
+            }
+        });
+    </script>
+
+</dom-module>

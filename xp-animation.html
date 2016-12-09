@@ -1,0 +1,483 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to create dynamic web animations in a declarative way.
+
+It can be used in conjunction with [xp-animation-group](https://expandjs.com/components/xp-animation-group).
+
+@element xp-animation
+@since 1.0.0
+@category functionality
+@description A web component used to create dynamic web animations in a declarative way
+@keywords web animation, expandjs, web components
+
+@homepage https://expandjs.com/components/xp-animation
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-animation.html
+
+@behavior xp-master-slave-behavior /bower_components/xp-elements/xp-master-slave-behavior.html
+@behavior xp-targeter-behavior /bower_components/xp-elements/xp-targeter-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-master-slave-behavior.html">
+<link rel="import" href="xp-targeter-behavior.html">
+
+<script src="../web-animations-js/web-animations-next.js"></script>
+
+<dom-module id="xp-animation">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-animation',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPMasterSlaveBehavior,
+                Polymer.XPTargeterBehavior
+            ],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when the animation is about to be canceled.
+             *
+             * @event xp-animation-cancel
+             * @param {Element} target
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be finished.
+             *
+             * @event xp-animation-finish
+             * @param {Element} target
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be paused.
+             *
+             * @event xp-animation-pause
+             * @param {Element} target
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be played.
+             *
+             * @event xp-animation-play
+             * @param {Element} target
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be reversed.
+             *
+             * @event xp-animation-reverse
+             * @param {Element} target
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be setup.
+             *
+             * @event xp-animation-setup
+             * @bubbles
+             */
+
+            /**
+             * Fired when the animation's state changes.
+             *
+             * @event xp-animation-state
+             * @param {string} state
+             * @bubbles
+             */
+
+            /*********************************************************************/
+
+            /**
+             * Stops the animation clearing the effects on the target.
+             *
+             * @method cancel
+             */
+            cancel() {
+                if (this.state !== 'idle') { this._execute('cancel'); }
+            },
+
+            /**
+             * Seeks the animation to the end.
+             *
+             * @method finish
+             */
+            finish() {
+                if (this.state === 'running' || this.state === 'paused') { this._execute('finish'); }
+            },
+
+            /**
+             * Pauses the animation.
+             *
+             * @method pause
+             */
+            pause() {
+                if (this.state === 'running') { this._execute('pause'); }
+            },
+
+            /**
+             * Plays the animation on the next frame.
+             *
+             * @method play
+             */
+            play() {
+                if (this.state !== 'running') { requestAnimationFrame(() => this._execute('play')); }
+            },
+
+            /**
+             * Plays the animation in reverse.
+             *
+             * @method reverse
+             */
+            reverse() {
+                if (this.state !== 'idle') { this._execute('reverse'); }
+            },
+
+            /*********************************************************************/
+
+            /**
+             * Executes an action.
+             *
+             * @method _execute
+             * @param {string} action
+             * @private
+             */
+            _execute(action) {
+
+                // Let
+                let player = this.player;
+
+                // Firing
+                if (!this.animation || this.fire(`xp-animation-${action}`, {target: this.findTarget()}, {cancelable: true}).defaultPrevented) { return; }
+
+                // Ensuring
+                this.ensure('state', this.states[action]);
+                this.ensure('player', this.player || document.timeline.play(this.animation));
+
+                // Canceling
+                if (!player) { this.player.cancel(); }
+
+                // Executing
+                this.player[action]();
+            },
+
+            /*********************************************************************/
+
+            // OBSERVERS
+            observers: [
+                '_animationChanged(group, keyframes, target, timing.*)'
+            ],
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The animation object.
+                 *
+                 * @attribute animation
+                 * @type Object
+                 * @readonly
+                 */
+                animation: {
+                    readOnly: true
+                },
+
+                /**
+                 * If set to true, the animation will play when it's ready or a property is updated.
+                 *
+                 * @attribute auto
+                 * @type boolean
+                 * @default false
+                 */
+                auto: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The ms of delay before beginning the animation.
+                 *
+                 * @attribute delay
+                 * @type number
+                 */
+                delay: {
+                    type: Number
+                },
+
+                /**
+                 * The animation's playback direction.
+                 *
+                 * `"normal"` plays it in the normal direction.
+                 *
+                 * `"reverse"` plays it in the reverse direction.
+                 *
+                 * `"alternate"` plays even iterations normally and the odd ones reverse.
+                 *
+                 * `"alternate-reverse"` plays even iterations reverse and the odd ones normally.
+                 *
+                 * @attribute direction
+                 * @type "alternate" | "alternate-reverse" | "normal" | "reverse"
+                 * @default "normal"
+                 */
+                direction: {
+                    type: String,
+                    value: 'normal'
+                },
+
+                /**
+                 * The animation's duration in milliseconds.
+                 *
+                 * @attribute duration
+                 * @type number
+                 */
+                duration: {
+                    type: Number
+                },
+
+                /**
+                 * The animation's easing.
+                 *
+                 * @attribute easing
+                 * @type "ease" | "ease-in" | "ease-out" | "ease-in-out" | "linear"
+                 * @default "linear"
+                 */
+                easing: {
+                    type: String,
+                    value: 'linear'
+                },
+
+                /**
+                 * The milliseconds to wait after the animation finishes.
+                 *
+                 * @attribute end-delay
+                 * @type number
+                 */
+                endDelay: {
+                    type: Number
+                },
+
+                /**
+                 * Controls the effect the animation has on the target when it's not playing.
+                 *
+                 * `"none"` means the animation has no effect when it's not playing.
+                 *
+                 * `"forwards"` applies the value at the end of the animation after it's finished.
+                 *
+                 * `"backwards"` applies the value at the start of the animation before it's started.
+                 *
+                 * `"both"` means forwards and backwards.
+                 *
+                 * @attribute fill
+                 * @type "backwards" | "both" | "forwards" | "none"
+                 * @default "none"
+                 */
+                fill: {
+                    type: String,
+                    value: 'none'
+                },
+
+                /**
+                 * The number of iterations the animation should run for.
+                 *
+                 * @attribute iterations
+                 * @type number | "Infinity"
+                 * @default 1
+                 */
+                iterations: {
+                    type: Number,
+                    value: 1
+                },
+
+                /**
+                 * The number of iterations into the animation in which to begin the effect.
+                 *
+                 * @attribute iteration-start
+                 * @type number
+                 */
+                iterationStart: {
+                    type: Number
+                },
+
+                /**
+                 * The animation's keyframes specified as an array of dictionaries of &#60;css properties&#62;:&#60;array of values&#62; pairs.
+                 *
+                 * @attribute keyframes
+                 * @type Array
+                 */
+                keyframes: {
+                    type: Array,
+                    value() { return []; }
+                },
+
+                /**
+                 * The animations grouper.
+                 *
+                 * @attribute group
+                 * @type Element
+                 * @readonly
+                 */
+                group: {
+                    master: '.animation-group',
+                    readOnly: true,
+                    value: null
+                },
+
+                /**
+                 * The animation's player.
+                 *
+                 * @attribute player
+                 * @type Object
+                 * @readonly
+                 */
+                player: {
+                    observer: '_playerChanged',
+                    readOnly: true
+                },
+
+                /**
+                 * The animation's state.
+                 *
+                 * @attribute state
+                 * @type "finished" | "idle" | "paused" | "running"
+                 * @default "idle"
+                 * @notifies
+                 * @readonly
+                 */
+                state: {
+                    notify: true,
+                    observer: '_stateChanged',
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: String,
+                    value: 'idle'
+                },
+
+                /**
+                 * The animation's timing.
+                 *
+                 * @attribute timing
+                 * @type Object
+                 * @readonly
+                 */
+                timing: {
+                    computed: '_computeTiming(delay, direction, duration, easing, endDelay, fill, iterations, iterationStart)',
+                    type: Object,
+                    value() { return {}; }
+                }
+            },
+
+            /**
+             * The list of possible animation's states.
+             *
+             * @property states
+             * @type Object
+             * @default {cancel: "idle", finish: "finished", pause: "paused", play: "running", reverse: "running"}
+             * @readonly
+             */
+            states: {cancel: 'idle', finish: 'finished', pause: 'paused', play: 'running', reverse: 'running'},
+
+            /*********************************************************************/
+
+            // COMPUTER
+            _computeTiming(delay, direction, duration, easing, endDelay, fill, iterations, iterationStart) {
+                return {
+                    delay:          delay || 0,
+                    direction:      direction || 'normal',
+                    duration:       XP.toFinite(duration) || 'auto',
+                    easing:         easing || 'linear',
+                    endDelay:       endDelay || 0,
+                    fill:           fill || 'none',
+                    iterations:     iterations || 1,
+                    iterationStart: iterationStart || 0
+                };
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _animationChanged() {
+
+                // Canceling
+                if (this.player) { this.player.cancel(); }
+
+                // Ensuring
+                this.ensure('animation', new KeyframeEffect(this.findTarget(), this.keyframes, this.timing));
+                this.ensure('player', document.timeline.play(this.animation));
+
+                // Canceling
+                this.player.cancel();
+
+                // Auto play
+                if (this.auto && !this.group) { this.play(); }
+
+                // Propagating
+                if (this.group) { this.group._animationChanged(); }
+            },
+
+            // OBSERVER
+            _playerChanged() {
+
+                // Listening
+                if (this.player) { this.player.onfinish = this._handleFinish.bind(this); }
+            },
+
+            // OBSERVER
+            _stateChanged() {
+
+                // Firing
+                this.fire('xp-animation-state', {state: this.state});
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            attached() {
+
+                // Firing
+                this.fire('xp-animation-setup');
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleFinish() {
+
+                // Ensuring
+                if (this.player.playState === 'finished') { this.ensure('state', 'finished'); }
+            }
+        });
+    </script>
+
+</dom-module>

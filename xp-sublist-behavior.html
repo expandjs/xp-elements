@@ -1,0 +1,217 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add sublist capabilities on a web component.
+
+@behavior xp-sublist-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add sublist capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-sublist-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-sublist-behavior.html
+
+@behavior xp-collapse-behavior /bower_components/xp-elements/xp-collapse-behavior.html
+@behavior xp-master-slave-behavior /bower_components/xp-elements/xp-master-slave-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-collapse-behavior.html">
+<link rel="import" href="xp-master-slave-behavior.html">
+
+<script>
+    Polymer.XPSublistBehaviorImp = {
+
+        // CLASSES
+        classes: ['sublist'],
+
+        /*********************************************************************/
+
+        // OBSERVERS
+        observers: [
+            '__listChanged(collapsed, collapsible, list)'
+        ],
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * The master list.
+             *
+             * @attribute list
+             * @type Element
+             * @readonly
+             */
+            list: {
+                master: '.list',
+                readOnly: true,
+                value: null
+            },
+
+            /**
+             * The slave sublists.
+             *
+             * @attribute sublists
+             * @type Array
+             * @readonly
+             */
+            sublists: {
+                readOnly: true,
+                slaves: '.sublist',
+                value() { return []; }
+            },
+
+            /**
+             * The master sublist.
+             *
+             * @attribute superlist
+             * @type Element
+             * @readonly
+             */
+            superlist: {
+                master: '.sublist',
+                observer: '__superlistChanged',
+                readOnly: true,
+                value: null
+            }
+        },
+
+        /*********************************************************************/
+
+        // OBSERVER
+        __collapsedChanged() {
+
+            // Checking
+            if (!this.collapser || !this.collapsible) { return; }
+
+            // Let
+            let take       = true,
+                animatable = this.animatable,
+                collapsed  = this.collapsed,
+                duration   = this.duration,
+                easing     = this.easing,
+                next       = XP.findNextElement(this, '.sublist[collapsible]:not([collapsed])'),
+                previous   = XP.findPreviousElement(this, '.sublist[collapsible]:not([collapsed])'),
+                elements   = XP.findNextElements(this, ':not(template)').filter(item => take = take && item.previousElementSibling !== next);
+
+            // Frame 1
+            let prepareAnimation = () => {
+
+                // Let
+                let opt = {
+                    base: previous ? -Polymer.dom(previous.root).querySelector('.collapsible').scrollHeight : 0,
+                    height: -this.collapser.scrollHeight
+                };
+
+                // Styling
+                elements.forEach(element => {
+                    element.style.transition = `transform 0s`;
+                    element.style.transform  = `translateY(${collapsed ? opt.base : opt.height}px)`;
+                });
+
+                // Translating
+                this.collapser.style.transition = animatable ? `transform ${duration / 1000}s ${easing}` : '';
+                this.collapser.style.transform  = `translateY(${collapsed ? `-100` : `0`}%)`;
+
+                // Returning
+                return opt;
+            };
+
+            // Frame 2
+            let executeAnimation = (opt) => {
+
+                // Styling
+                elements.forEach(element => {
+                    element.style.transition = animatable ? `transform ${duration / 1000}s ${easing}` : '';
+                    element.style.transform  = `translateY(${collapsed ? opt.height : opt.base}px)`;
+                });
+
+                // Debouncing
+                this.debounce('collapsing', () => {
+
+                    // Ensuring
+                    this.ensure('collapsing', false);
+
+                    // Styling
+                    elements.forEach(element => {
+                        element.style.transition = `transform 0s`;
+                        element.style.transform  = `translateY(0)`;
+                    });
+
+                }, duration);
+            };
+
+            // Firing
+            this.fire('xp-collapse', {isCollapsed: collapsed});
+
+            // Ensuring
+            this.ensure('collapsing', true);
+
+            // Translating
+            if (!animatable) { executeAnimation(prepareAnimation()); return; }
+
+            // Animating
+            requestAnimationFrame(() => { let opt = prepareAnimation(); requestAnimationFrame(() => executeAnimation(opt)); });
+        },
+
+        // OBSERVER
+        __listChanged() {
+
+            // Checking
+            if (!this.isAttached) { return; }
+
+            // Ensuring
+            if (!this.collapsible) { return this.collapsed = false; }
+
+            // Collapsing
+            if (!this.collapsed && this.list && this.list.autoCollapse) { XP.findSiblingElements(this, '.sublist').forEach(sublist => sublist.collapse()); }
+
+            // Expanding
+            if (!this.collapsed && this.superlist) { this.superlist.expand(); }
+        },
+
+        // OBSERVER
+        __superlistChanged() {
+
+            // Mutating
+            Polymer.XPSublistBehaviorImp.mutated.apply(this);
+        },
+
+        /*********************************************************************/
+
+        // LISTENER
+        mutated() {
+
+            // Disconnecting
+            if (this.collapsedObserver) { this.collapsedObserver.disconnect(); }
+
+            // Collapsing
+            if (this.superlist && this.collapsible && this.superlist.collapsed) { this.collapse(); }
+
+            // Observing
+            if (this.superlist) { this.collapsedObserver = XP.onMutation(this.superlist, Polymer.XPSublistBehaviorImp.mutated.bind(this), {attributes: true, attributeFilter: ['collapsed']}); }
+        },
+
+        // LISTENER
+        ready() {
+
+            // Translating
+            this.collapser.style.transform = `translateY(${this.collapsed ? `-100` : `0`}%)`;
+        }
+    };
+
+    Polymer.XPSublistBehavior = [
+        Polymer.XPCollapseBehavior,
+        Polymer.XPMasterSlaveBehavior,
+        Polymer.XPSublistBehaviorImp
+    ];
+</script>

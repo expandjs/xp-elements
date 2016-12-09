@@ -1,0 +1,123 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to define a set of icons.
+
+It can be used in conjunction with [xp-icon](https://expandjs.com/components/xp-icon).
+
+@element xp-iconset
+@since 1.0.0
+@category functionality
+@description A web component used to define a set of icons
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-iconset
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-iconset.html
+
+@behavior xp-iconset-finder /bower_components/xp-elements/xp-iconset-finder.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-iconset-finder.html">
+
+<dom-module id="xp-iconset">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+        <slot></slot>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-iconset',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPIconsetFinder
+            ],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when the iconset name changes.
+             *
+             * @event xp-iconset
+             * @param {string} name
+             * @bubbles
+             */
+
+            /*********************************************************************/
+
+            /**
+             * Returns a copy of an iconset's icon.
+             *
+             * @method findIcon
+             * @param {string} name
+             * @returns {Node}
+             */
+            findIcon(name) {
+
+                // Asserting
+                XP.assertArgument(XP.isVoid(name) || XP.isString(name), 1, 'string');
+
+                // Let
+                let wrap  = name ? XP.findElement(Polymer.dom(this), `svg`) : null,
+                    icon  = wrap ? XP.getElement(Polymer.dom(wrap), `g[id="${name}"]`) : null,
+                    clone = icon ? icon.cloneNode(true) : null;
+
+                // Cleaning
+                if (clone) { clone.removeAttribute('id'); }
+
+                return clone;
+            },
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The iconset's name.
+                 *
+                 * @attribute name
+                 * @type string
+                 */
+                name: {
+                    observer: '_nameChanged',
+                    reflectToAttribute: true,
+                    type: String
+                }
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _nameChanged() {
+
+                // Setting
+                this.icons[this.name] = this;
+
+                // Firing
+                this.fire('xp-iconset', {name: this.name}, {node: window});
+            }
+        });
+    </script>
+
+</dom-module>

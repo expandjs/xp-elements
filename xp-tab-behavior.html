@@ -1,0 +1,164 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add tab capabilities on a web component.
+
+@behavior xp-tabs-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add tab capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-tabs-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-tabs-behavior.html
+
+@behavior xp-master-slave-behavior /bower_components/xp-elements/xp-master-slave-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-master-slave-behavior.html">
+
+<script>
+    Polymer.XPTabBehaviorImp = {
+
+        // CLASSES
+        classes: ['tab'],
+
+        /*********************************************************************/
+
+        // OBSERVERS
+        observers: [
+            '__handleCompare(data.*, memento.*)'
+        ],
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * The `tagName` of the element to inject into the tab's page.
+             *
+             * @attribute content
+             * @type string
+             */
+            content: {
+                observer: '__contentChanged',
+                reflectToAttribute: true,
+                type: String
+            },
+
+            /**
+             * The tab's data.
+             *
+             * @attribute data
+             * @type *
+             * @notifies
+             */
+            data: {
+                notify: true
+            },
+
+            /**
+             * The tab's label.
+             *
+             * @attribute label
+             * @type string
+             */
+            label: {
+                reflectToAttribute: true,
+                type: String
+            },
+
+            /**
+             * The memento, used to know when the tab's data changes.
+             *
+             * @attribute memento
+             * @type Object
+             */
+            memento: {
+                type: Object
+            },
+
+            /**
+             * If set to true, the tab's data ant its memento are not equivalent.
+             *
+             * @attribute modified
+             * @type boolean
+             * @default false
+             * @notifies
+             * @readonly
+             */
+            modified: {
+                notify: true,
+                readOnly: true,
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * The tab's targeted page.
+             *
+             * @attribute page
+             * @type Element
+             */
+            page: {
+                observer: '__pageChanged'
+            },
+
+            /**
+             * The master selector.
+             *
+             * @attribute selector
+             * @type Element
+             * @readonly
+             */
+            selector: {
+                master: '.tabs',
+                readOnly: true,
+                value: null
+            }
+        },
+
+        /*********************************************************************/
+
+        // OBSERVER
+        __contentChanged() {
+
+            // Let
+            let target = this.findTarget();
+
+            // Setting
+            if (target) { target.content = this.content; }
+        },
+
+        // OBSERVER
+        __pageChanged(post, pre) {
+
+            // Linking
+            if (pre) { this.unlinkProperties('data', 'data', pre); }
+            if (post) { this.linkProperties('data', 'data', post); }
+        },
+
+        /*********************************************************************/
+
+        // HANDLER
+        __handleCompare() {
+
+            // Ensuring
+            this.ensure('modified', !XP.isVoid(this.memento) && !XP.isEquivalent(this.data, this.memento));
+        }
+    };
+
+    Polymer.XPTabBehavior = [
+        Polymer.XPMasterSlaveBehavior,
+        Polymer.XPTabBehaviorImp
+    ];
+</script>

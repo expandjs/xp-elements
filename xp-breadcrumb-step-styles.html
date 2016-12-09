@@ -1,0 +1,47 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+This stylesheet is used to stylize a breadcrumb step element.
+
+@stylesheet xp-breadcrumb-step-styles
+@since 1.0.0
+@category stylesheets
+@description A stylesheet used to stylize a breadcrumb step element
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-breadcrumb-step-styles
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-breadcrumb-step-styles.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+
+<dom-module id="xp-breadcrumb-step-styles">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                box-sizing: border-box;
+                height: 100%;
+                position: relative;
+            }
+
+            :host([label=""]),
+            :host(:not([label])) {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+</dom-module>

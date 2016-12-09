@@ -1,0 +1,349 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to group multiple animations.
+
+It must be used in conjunction with [xp-animation](https://expandjs.com/components/xp-animation).
+
+@element xp-animation-group
+@since 1.0.0
+@category functionality
+@description A web component used to group multiple animations
+@keywords web animation, expandjs, web components
+
+@homepage https://expandjs.com/components/xp-animation-group
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-animation-group.html
+
+@behavior xp-master-slave-behavior /bower_components/xp-elements/xp-master-slave-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-animation.html">
+<link rel="import" href="xp-master-slave-behavior.html">
+
+<dom-module id="xp-animation-group">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+        <slot></slot>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-animation-group',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPMasterSlaveBehavior
+            ],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when the animation is about to be canceled.
+             *
+             * @event xp-animation-cancel
+             * @param {Array} animations
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be finished.
+             *
+             * @event xp-animation-finish
+             * @param {Array} animations
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be paused.
+             *
+             * @event xp-animation-pause
+             * @param {Array} animations
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be played.
+             *
+             * @event xp-animation-play
+             * @param {Array} animations
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be reversed.
+             *
+             * @event xp-animation-reverse
+             * @param {Array} animations
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when the animation is about to be setup.
+             *
+             * @event xp-animation-setup
+             * @bubbles
+             */
+
+            /**
+             * Fired when the animation's state changes.
+             *
+             * @event xp-animation-state
+             * @param {string} state
+             * @bubbles
+             */
+
+            /*********************************************************************/
+
+            /**
+             * Stops the animation clearing the effects on the target.
+             *
+             * @method cancel
+             */
+            cancel() {
+                if (this.state !== 'idle') { this._execute('cancel'); }
+            },
+
+            /**
+             * Seeks the animation to the end.
+             *
+             * @method finish
+             */
+            finish() {
+                if (this.state === 'running' || this.state === 'paused') { this._execute('finish'); }
+            },
+
+            /**
+             * Pauses the animation.
+             *
+             * @method pause
+             */
+            pause() {
+                if (this.state === 'running') { this._execute('pause'); }
+            },
+
+            /**
+             * Plays the animation on the next frame.
+             *
+             * @method play
+             */
+            play() {
+                if (this.state !== 'running') { requestAnimationFrame(() => this._execute('play')); }
+            },
+
+            /**
+             * Plays the animation in reverse.
+             *
+             * @method reverse
+             */
+            reverse() {
+                if (this.state !== 'idle') { this._execute('reverse'); }
+            },
+
+            /*********************************************************************/
+
+            /**
+             * Executes an action.
+             *
+             * @method _execute
+             * @param {string} action
+             * @private
+             */
+            _execute(action) {
+
+                // Let
+                let player = this.player;
+
+                // Firing
+                if (!this.animation || this.fire(`xp-animation-${action}`, {animations: this.animations}, {cancelable: true}).defaultPrevented) { return; }
+
+                // Ensuring
+                this.ensure('state', this.states[action]);
+                this.ensure('player', this.player || document.timeline.play(this.animation));
+
+                // Canceling
+                if (!player) { this.player.cancel(); }
+
+                // Executing
+                this.player[action]();
+            },
+
+            /*********************************************************************/
+
+            // OBSERVERS
+            observers: [
+                '_animationChanged(animations, sequence)'
+            ],
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The animation object.
+                 *
+                 * @attribute animation
+                 * @type Object
+                 * @readonly
+                 */
+                animation: {
+                    readOnly: true
+                },
+
+                /**
+                 * The slave animations.
+                 *
+                 * @attribute animations
+                 * @type Array
+                 * @readonly
+                 */
+                animations: {
+                    readOnly: true,
+                    slaves: '.animation',
+                    value() { return []; }
+                },
+
+                /**
+                 * If set to true, the animation group will play when it's ready or a property is updated.
+                 *
+                 * @attribute auto
+                 * @type boolean
+                 * @default false
+                 */
+                auto: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The animation's player.
+                 *
+                 * @attribute player
+                 * @type Object
+                 * @readonly
+                 */
+                player: {
+                    observer: '_playerChanged',
+                    readOnly: true
+                },
+
+                /**
+                 * If set to true, the animations is played in sequence.
+                 *
+                 * @attribute sequence
+                 * @type boolean
+                 * @default false
+                 */
+                sequence: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The animation group's state.
+                 *
+                 * @attribute state
+                 * @type "finished" | "idle" | "paused" | "running"
+                 * @default "idle"
+                 * @readonly
+                 */
+                state: {
+                    notify: true,
+                    observer: '_stateChanged',
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: String,
+                    value: 'idle'
+                }
+            },
+
+            /**
+             * The list of possible animation's states.
+             *
+             * @property states
+             * @type Object
+             * @default {cancel: "idle", finish: "finished", pause: "paused", play: "running", reverse: "running"}
+             * @readonly
+             */
+            states: {cancel: 'idle', finish: 'finished', pause: 'paused', play: 'running', reverse: 'running'},
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _animationChanged() {
+
+                // Let
+                let Constructor = this.sequence ? SequenceEffect : GroupEffect,
+                    animations  = this.animations ? this.animations.map(animation => animation.animation).filter(animation => animation) : [];
+
+                // Canceling
+                if (this.player) { this.player.cancel(); }
+
+                // Ensuring
+                this.ensure('animation', new Constructor(animations));
+                this.ensure('player', document.timeline.play(this.animation));
+
+                // Canceling
+                this.player.cancel();
+
+                // Auto play
+                if (this.auto) { this.play(); }
+            },
+
+            // OBSERVER
+            _playerChanged() {
+
+                // Listening
+                if (this.player) { this.player.onfinish = this._handleFinish.bind(this); }
+            },
+
+            // OBSERVER
+            _stateChanged() {
+
+                // Firing
+                this.fire('xp-animation-state', {state: this.state});
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            attached() {
+
+                // Firing
+                this.fire('xp-animation-setup');
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleFinish() {
+
+                // Ensuring
+                if (this.player.playState === 'finished') { this.ensure('state', 'finished'); }
+            }
+        });
+    </script>
+
+</dom-module>

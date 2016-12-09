@@ -1,0 +1,54 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A stylesheet used to stylize a pages element.
+
+@stylesheet xp-pages-styles
+@since 1.0.0
+@category stylesheets
+@description A stylesheet used to stylize a pages element
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-pages-styles
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-pages-styles.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="xp-pages-styles">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                bottom: 0;
+                display: block;
+                left: 0;
+                overflow: hidden;
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+
+            /* SLOTTED */
+
+            :host .slider ::slotted(.page) {
+                box-sizing: border-box;
+                height: 100%;
+            }
+
+            :host .slider ::slotted(.page:not([active])) {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+</dom-module>

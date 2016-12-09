@@ -1,0 +1,57 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to display a container above others.
+
+@element xp-overlay
+@since 1.0.0
+@category containers
+@description A web component used to display a container above others
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-overlay
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-overlay.html
+
+@behavior xp-overlay-behavior /bower_components/xp-elements/xp-overlay-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-overlay-behavior.html">
+<link rel="import" href="xp-overlay-styles.html">
+
+<dom-module id="xp-overlay">
+
+    <template strip-whitespace>
+
+        <style include="xp-overlay-styles"></style>
+
+        <div class="wrapper">
+            <div class="body">
+                <slot></slot>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-overlay',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPOverlayBehavior
+            ]
+        });
+    </script>
+
+</dom-module>

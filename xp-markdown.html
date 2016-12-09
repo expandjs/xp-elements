@@ -1,0 +1,317 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to parse and display a markdown formatted text.
+
+@element xp-markdown
+@since 1.0.0
+@category contents
+@description A web component used to parse and display a markdown formatted text
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-markdown
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-markdown.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+<link rel="import" href="xp-markdown-styles.html">
+
+<script src="../prism/prism.js"></script>
+<script src="../markdown-it/dist/markdown-it.min.js"></script>
+
+<dom-module id="xp-markdown">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: block;
+            }
+
+            :host([empty]) {
+                display: none !important;
+            }
+        </style>
+
+        <slot></slot>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-markdown',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPBaseBehavior
+            ],
+
+            // CLASSES
+            classes: ['markdown'],
+
+            /*********************************************************************/
+
+            /**
+             * Detects the language definition.
+             *
+             * @method _detect
+             * @param {string} code
+             * @param {string} [lang]
+             * @returns {Object}
+             * @private
+             */
+            _detect(code, lang) {
+                if (!lang) { return code.match(/^\s*</) ? Prism.languages.markup : Prism.languages.javascript; }
+                if (lang === 'js' || lang.substr(0, 2) === 'es') { return Prism.languages.javascript; }
+                if (lang === 'css') { return Prism.languages.css; }
+                if (lang === 'c') { return Prism.languages.clike; }
+                return Prism.languages.markup;
+            },
+
+            /*********************************************************************/
+
+            // OBSERVERS
+            observers: [
+                '_parserChanged(breaks, html, linkify, quotes, typographer, xhtmlOut)',
+                '_sourceChanged(source, parser)'
+            ],
+
+            // LISTENERS
+            listeners: {
+                'click': '_handleClick'
+            },
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * If set to true, converts `\n` into `<br>`.
+                 *
+                 * @attribute breaks
+                 * @type boolean
+                 * @default false
+                 */
+                breaks: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * If set to true, the element is hidden.
+                 *
+                 * @attribute empty
+                 * @type boolean
+                 * @default true
+                 * @notifies
+                 * @readonly
+                 */
+                empty: {
+                    computed: '_computeEmpty(parsed)',
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: true
+                },
+
+                /**
+                 * If set to true, enables html tags in parsed.
+                 *
+                 * @attribute html
+                 * @type boolean
+                 * @default false
+                 */
+                html: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * If set to true, converts URL-like text into links.
+                 *
+                 * @attribute linkify
+                 * @type boolean
+                 * @default false
+                 */
+                linkify: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The markdown parser.
+                 *
+                 * @attribute parser
+                 * @type Object
+                 * @readonly
+                 */
+                parser: {
+                    readOnly: true
+                },
+
+                /**
+                 * The html rendered from markdown's source.
+                 *
+                 * @attribute parsed
+                 * @type string
+                 * @notifies
+                 * @readonly
+                 */
+                parsed: {
+                    notify: true,
+                    observer: '_parsedChanged',
+                    readOnly: true,
+                    type: String
+                },
+
+                /**
+                 * Double plus single quotes replacement pairs, when typographer is enabled.
+                 *
+                 * @attribute quotes
+                 * @type string
+                 * @default "\u201c\u201d\u2018\u2019"
+                 */
+                quotes: {
+                    type: String,
+                    value: '\u201c\u201d\u2018\u2019'
+                },
+
+                /**
+                 * The markdown's source to render.
+                 *
+                 * @attribute source
+                 * @type string
+                 */
+                source: {
+                    type: String
+                },
+
+                /**
+                 * If set to true, enables some language-neutral replacement plus quotes beautification.
+                 *
+                 * @attribute typographer
+                 * @type boolean
+                 * @default false
+                 */
+                typographer: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * If set to true, uses `/` to close single tags like `<br>`.
+                 *
+                 * @attribute xhtml-out
+                 * @type boolean
+                 * @default false
+                 */
+                xhtmlOut: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            /*********************************************************************/
+
+            // COMPUTER
+            _computeEmpty(parsed) {
+                return !parsed;
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _parserChanged: function() {
+
+                // Let
+                let parser = markdownit({
+                    breaks: this.breaks,
+                    highlight: (source, lang) => Prism.highlight(source, this._detect(source, lang)),
+                    html: this.html,
+                    linkify: this.linkify,
+                    quotes: this.quotes,
+                    typographer: this.typographer,
+                    xhtmlOut: this.xhtmlOut
+                });
+
+                // Plugin (adds anchor support)
+                parser.core.ruler.push('heading_anchors', state => {
+                    for (let i = 0; i < state.tokens.length - 1; i += 1) {
+                        if (state.tokens[i].type === 'heading_open' && state.tokens[i+1].type === 'inline' && state.tokens[i+1].content) {
+                            let anchorName = state.tokens[i+1].content.replace(/ /g, '');
+                            state.tokens[i].attrPush(['id', anchorName]);
+                            let anchorToken = new state.Token('html_inline', '', 0);
+                            anchorToken.content = `<a name="${anchorName}"></a>`;
+                            state.tokens[i+1].children.unshift(anchorToken);
+                            i += 2;
+                        }
+                    }
+                });
+
+                // Ensuring
+                this.ensure('parser', parser);
+            },
+
+            // OBSERVER
+            _parsedChanged() {
+
+                // Updating
+                this.async(() => Polymer.dom(this).innerHTML = this.parsed || '');
+            },
+
+            // OBSERVER
+            _sourceChanged() {
+
+                // Ensuring
+                if (this.parser) { this.ensure('parsed', this.parser.render(this.source || '')); }
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            attached() {
+
+                // Let
+                let parsed = this.parsed;
+
+                // Ensuring
+                this.ensure('source', this.source || Polymer.dom(this).innerHTML);
+
+                // Updating
+                if (this.parsed === parsed) { this._parsedChanged(); }
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleClick(event) {
+
+                // Checking
+                if (event.button) { return; }
+
+                // Let
+                let firer  = this.firer(event),
+                    anchor = firer.tagName === 'A' ? firer : XP.findParentElement(firer, 'a', this);
+
+                // Checking
+                if (!anchor || !anchor.href) { return; }
+
+                // Firing
+                if (this.fire('xp-redirect', {anchor: anchor, href: anchor.href}, {cancelable: true}).defaultPrevented) { event.preventDefault(); }
+            }
+        });
+    </script>
+
+</dom-module>

@@ -1,0 +1,647 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to perform files uploading.
+
+@element xp-uploader
+@since 1.0.0
+@category functionality
+@description A web component used to perform files uploading
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-uploader
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-uploader.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-uploader/xp-uploader.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<dom-module id="xp-uploader">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-uploader',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPBaseBehavior
+            ],
+
+            // CLASSES
+            classes: ['uploader'],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when data are received.
+             *
+             * @event xp-uploader-data
+             * @param {*} data
+             * @bubbles
+             */
+
+            /**
+             * Fired when a chunk of data is downloaded.
+             *
+             * @event xp-uploader-download
+             * @param {number} loaded
+             * @param {number} total
+             * @bubbles
+             */
+
+            /**
+             * Fired when an error is received.
+             *
+             * @event xp-uploader-error
+             * @param {Object} error
+             * @bubbles
+             */
+
+            /**
+             * Fired when a response is received.
+             *
+             * @event xp-uploader-response
+             * @param {number} statusCode
+             * @param {string} statusMessage
+             * @bubbles
+             */
+
+            /**
+             * Fired when the uploader's state changes.
+             *
+             * @event xp-uploader-state
+             * @param {string} state
+             * @bubbles
+             */
+
+            /**
+             * Fired when the upload has started.
+             *
+             * @event xp-uploader-submit
+             * @param {*} file
+             * @bubbles
+             * @cancelable
+             */
+
+            /**
+             * Fired when a chunk of data is uploaded.
+             *
+             * @event xp-uploader-upload
+             * @param {number} loaded
+             * @param {number} total
+             * @bubbles
+             */
+
+            /*********************************************************************/
+
+            /**
+             * Aborts the upload.
+             *
+             * @method abort
+             * @param {Function} [callback]
+             */
+            abort(callback) {
+
+                // Checking
+                if (!this.pending) { callback(null, false); return; }
+
+                // Aborting
+                this.pending.abort(callback);
+            },
+
+            /**
+             * Get or set a header.
+             *
+             * @method header
+             * @param {string} name
+             * @param {number | string} [value]
+             * @returns {number | string}
+             */
+            header(name, value) {
+
+                // Asserting
+                XP.assertArgument(XP.isString(name, true), 1, 'string');
+                XP.assertArgument(XP.isVoid(value) || XP.isFalse(value) || XP.isInput(value, true), 2, 'string');
+
+                // Getting
+                if (!XP.isDefined(value)) { return this.headers[name]; }
+
+                // Setting
+                if (value) { return this.headers[name] = value; }
+
+                // Deleting
+                delete this.headers[name];
+            },
+
+            /**
+             * Resets the uploader.
+             *
+             * @method reset
+             */
+            reset() {
+
+                // Resetting
+                this.ensure('uploader', null);
+            },
+
+            /**
+             * Submits the file.
+             *
+             * @method submit
+             * @param {File} file
+             * @param {Function} [callback]
+             */
+            submit(file, callback) {
+
+                // Asserting
+                XP.assertArgument(XP.isInstance(file, File), 1, 'File');
+                XP.assertArgument(XP.isVoid(callback) || XP.isFunction(callback), 2, 'Function');
+
+                // Let
+                let uploader;
+
+                // Firing
+                if (this.fire('xp-uploader-submit', {file: file}, {cancelable: true}).defaultPrevented) { return; }
+
+                // Checking
+                if (!this.hostname && !this.path && !this.port && !this.url) { return this.ensure('pending', null); }
+
+                // Ensuring
+                this.ensure('pending', uploader = new XPUploader(XP.pick(this, ['headers', 'hostname', 'keepAlive', 'method', 'offset', 'parser', 'path', 'port', 'protocol', 'url'])));
+
+                // Listening
+                uploader.on('data', this._handleData.bind(this, uploader));
+                uploader.on('download', this._handleDownload.bind(this, uploader));
+                uploader.on('error', this._handleError.bind(this, uploader));
+                uploader.on('response', this._handleResponse.bind(this, uploader));
+                uploader.on('state', this._handleState.bind(this, uploader));
+                uploader.on('upload', this._handleUpload.bind(this, uploader));
+
+                // Submitting
+                uploader.submit(file, (error, data) => callback && uploader === this.uploader && callback(error, data));
+            },
+
+            /*********************************************************************/
+
+            // OBSERVERS
+            observers: [
+                '_urlChanged(headers, hostname, method, parser, path, port, protocol, url)'
+            ],
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The received data.
+                 *
+                 * @attribute data
+                 * @type *
+                 * @notifies
+                 * @readonly
+                 */
+                data: {
+                    notify: true,
+                    readOnly: true,
+                    value: null
+                },
+
+                /**
+                 * The downloaded bytes.
+                 *
+                 * @attribute downLoaded
+                 * @type number
+                 * @default 0
+                 * @notifies
+                 * @readonly
+                 */
+                downLoaded: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: 0
+                },
+
+                /**
+                 * The download ratio.
+                 *
+                 * @attribute downRatio
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                downRatio: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The download total.
+                 *
+                 * @attribute downTotal
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                downTotal: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * If set to true, there is no received data.
+                 *
+                 * @attribute empty
+                 * @type boolean
+                 * @default true
+                 * @notifies
+                 * @readonly
+                 */
+                empty: {
+                    computed: '_computeEmpty(data)',
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: true
+                },
+
+                /**
+                 * The received error.
+                 *
+                 * @attribute error
+                 * @type Object
+                 * @notifies
+                 * @readonly
+                 */
+                error: {
+                    notify: true,
+                    readOnly: true,
+                    type: Object,
+                    value: null
+                },
+
+                /**
+                 * An object containing uploader headers.
+                 *
+                 * @attribute headers
+                 * @type Object
+                 * @default {}
+                 */
+                headers: {
+                    type: Object,
+                    value() { return {}; }
+                },
+
+                /**
+                 * The uploader's hostname.
+                 *
+                 * @attribute hostname
+                 * @type string
+                 */
+                hostname: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * How often to submit TCP KeepAlive packets over sockets being kept alive.
+                 *
+                 * @attribute keep-alive
+                 * @type number
+                 * @default 0
+                 */
+                keepAlive: {
+                    type: Number,
+                    value: 0
+                },
+
+                /**
+                 * A string specifying the HTTP upload method.
+                 *
+                 * @attribute method
+                 * @type string
+                 * @default "POST"
+                 */
+                method: {
+                    type: String,
+                    value: 'POST'
+                },
+
+                /**
+                 * The type of data expected back from the server.
+                 *
+                 * @attribute parser
+                 * @type string
+                 * @default "json"
+                 */
+                parser: {
+                    type: String,
+                    value: 'json'
+                },
+
+                /**
+                 * The uploader's path.
+                 *
+                 * @attribute path
+                 * @type string
+                 */
+                path: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * The pending upload.
+                 *
+                 * @attribute pending
+                 * @type Object
+                 * @readonly
+                 */
+                pending: {
+                    readOnly: true
+                },
+
+                /**
+                 * The uploader's port.
+                 *
+                 * @attribute port
+                 * @type number
+                 */
+                port: {
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The uploader's protocol.
+                 *
+                 * @attribute protocol
+                 * @type string
+                 */
+                protocol: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * The uploader's instance.
+                 *
+                 * @attribute uploader
+                 * @type Object
+                 * @readonly
+                 */
+                uploader: {
+                    observer: '_uploaderChanged',
+                    readOnly: true
+                },
+
+                /**
+                 * The uploader's state.
+                 *
+                 * @attribute state
+                 * @type string
+                 * @default "idle"
+                 * @notifies
+                 * @readonly
+                 */
+                state: {
+                    notify: true,
+                    observer: '_stateChanged',
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: String,
+                    value: 'idle'
+                },
+
+                /**
+                 * The uploader's status code.
+                 *
+                 * @attribute status-code
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                statusCode: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number
+                },
+
+                /**
+                 * The uploader's status message.
+                 *
+                 * @attribute status-message
+                 * @type string
+                 * @notifies
+                 * @readonly
+                 */
+                statusMessage: {
+                    notify: true,
+                    readOnly: true,
+                    type: String
+                },
+
+                /**
+                 * The uploaded bytes.
+                 *
+                 * @attribute upLoaded
+                 * @type number
+                 * @default 0
+                 * @notifies
+                 * @readonly
+                 */
+                upLoaded: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: 0
+                },
+
+                /**
+                 * The upload ratio.
+                 *
+                 * @attribute upRatio
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                upRatio: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The upload total.
+                 *
+                 * @attribute upTotal
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                upTotal: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The uploader's url.
+                 *
+                 * @attribute url
+                 * @type string
+                 */
+                url: {
+                    type: String,
+                    value: null
+                }
+            },
+
+            /*********************************************************************/
+
+            // COMPUTER
+            _computeEmpty(data) {
+                return !data;
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _stateChanged() {
+
+                // Firing
+                if (this.state !== 'idle') { this.fire('xp-uploader-state', {state: this.state}); }
+            },
+
+            // OBSERVER
+            _uploaderChanged() {
+
+                // Ensuring
+                this.ensure('data', null);
+                this.ensure('downLoaded', 0);
+                this.ensure('downRatio', null);
+                this.ensure('downTotal', null);
+                this.ensure('upLoaded', 0);
+                this.ensure('upRatio', null);
+                this.ensure('upTotal', null);
+                this.ensure('error', (this.uploader && this.uploader.error) || null);
+                this.ensure('statusCode', (this.uploader && this.uploader.statusCode) || null);
+                this.ensure('statusMessage', (this.uploader && this.uploader.statusMessage) || null);
+            },
+
+            // OBSERVER
+            _urlChanged() {
+
+                // Resetting
+                this.reset();
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleData(uploader, data) {
+
+                // Checking
+                if (uploader !== this.uploader) { return; }
+
+                // Ensuring
+                this.ensure('data', data);
+
+                // Firing
+                this.fire('xp-uploader-data', {data: data});
+            },
+
+            // HANDLER
+            _handleDownload(uploader, loaded, total) {
+
+                // Checking
+                if (uploader !== this.uploader) { return; }
+
+                // Pushing
+                this.ensure('downLoaded', loaded);
+                this.ensure('downRatio', uploader.downRatio);
+
+                // Firing
+                this.fire('xp-uploader-download', {loaded: loaded, total: total});
+            },
+
+            // HANDLER
+            _handleError(uploader, error) {
+
+                // Checking
+                if (this.uploader && uploader.tsSubmit < this.uploader.tsSubmit) { return; }
+
+                // Ensuring
+                this.ensure('uploader', uploader);
+                this.ensure('error', error);
+
+                // Firing
+                this.fire('xp-uploader-error', {error: error});
+            },
+
+            // HANDLER
+            _handleResponse(uploader) {
+
+                // Checking
+                if (this.uploader && uploader.tsSubmit < this.uploader.tsSubmit) { return; }
+
+                // Ensuring
+                this.ensure('uploader', uploader);
+                this.ensure('downTotal', uploader.downTotal);
+                this.ensure('downRatio', uploader.downRatio);
+
+                // Firing
+                this.fire('xp-uploader-response', {statusCode: this.statusCode, statusMessage: this.statusMessage});
+            },
+
+            // HANDLER
+            _handleState(uploader, state) {
+
+                // Ensuring
+                if (uploader === this.pending) { this.ensure('state', state); }
+            },
+
+            // HANDLER
+            _handleUpload(uploader, loaded, total) {
+
+                // Checking
+                if (uploader !== this.uploader) { return; }
+
+                // Pushing
+                this.ensure('upLoaded', loaded);
+                this.ensure('upRatio', uploader.upRatio);
+
+                // Firing
+                this.fire('xp-uploader-upload', {loaded: loaded, total: total});
+            }
+        })
+    </script>
+</dom-module>

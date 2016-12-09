@@ -1,0 +1,608 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to perform XHR requests.
+
+@element xp-request
+@since 1.0.0
+@category functionality
+@description A web component used to perform XHR requests
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-request
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-request.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-request/xp-request.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<dom-module id="xp-request">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-request',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPBaseBehavior
+            ],
+
+            // CLASSES
+            classes: ['request'],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when data are received.
+             *
+             * @event xp-request-data
+             * @param {*} data
+             * @bubbles
+             */
+
+            /**
+             * Fired when a chunk of data is downloaded.
+             *
+             * @event xp-request-download
+             * @param {number} loaded
+             * @param {number} total
+             * @bubbles
+             */
+
+            /**
+             * Fired when an error is received.
+             *
+             * @event xp-request-error
+             * @param {Object} error
+             * @bubbles
+             */
+
+            /**
+             * Fired when a response is received.
+             *
+             * @event xp-request-response
+             * @param {number} statusCode
+             * @param {string} statusMessage
+             * @bubbles
+             */
+
+            /**
+             * Fired when the request's state changes.
+             *
+             * @event xp-request-state
+             * @param {string} state
+             * @bubbles
+             */
+
+            /**
+             * Fired when the request is about to be submitted.
+             *
+             * @event xp-request-submit
+             * @param {*} data
+             * @bubbles
+             * @cancelable
+             */
+
+            /*********************************************************************/
+
+            /**
+             * Aborts the request.
+             *
+             * @method abort
+             * @param {Function} [callback]
+             */
+            abort(callback) {
+
+                // Checking
+                if (!this.pending) { callback(null, false); return; }
+
+                // Aborting
+                this.pending.abort(callback);
+            },
+
+            /**
+             * Get or set a header.
+             *
+             * @method header
+             * @param {string} name
+             * @param {number | string} [value]
+             * @returns {number | string}
+             */
+            header(name, value) {
+
+                // Asserting
+                XP.assertArgument(XP.isString(name, true), 1, 'string');
+                XP.assertArgument(XP.isVoid(value) || XP.isFalse(value) || XP.isInput(value, true), 2, 'string');
+
+                // Getting
+                if (!XP.isDefined(value)) { return this.headers[name]; }
+
+                // Setting
+                if (value) { return this.headers[name] = value; }
+
+                // Deleting
+                delete this.headers[name];
+            },
+
+            /**
+             * Resets the request.
+             *
+             * @method reset
+             */
+            reset() {
+
+                // Resetting
+                this.ensure('request', null);
+            },
+
+            /**
+             * Submits the request, using `data` for the request's body.
+             *
+             * @method submit
+             * @param {*} [data]
+             * @param {Function} [callback]
+             */
+            submit(data, callback) {
+
+                // Preparing
+                if (XP.isFunction(data)) { callback = data; data = null; }
+
+                // Asserting
+                XP.assertArgument(XP.isVoid(callback) || XP.isFunction(callback), 2, 'Function');
+
+                // Debouncing
+                this.debounce('submitting', () => {
+
+                    // Let
+                    let request;
+
+                    // Firing
+                    if (this.fire('xp-request-submit', {data: data}, {cancelable: true}).defaultPrevented) { return; }
+
+                    // Checking
+                    if (!this.hostname && !this.path && !this.port && !this.url) { return this.ensure('pending', null); }
+
+                    // Ensuring
+                    this.ensure('pending', request = new XPRequest(XP.pick(this, ['headers', 'hostname', 'keepAlive', 'method', 'parser', 'path', 'port', 'protocol', 'url'])));
+
+                    // Listening
+                    request.on('data', this._handleData.bind(this, request));
+                    request.on('download', this._handleDownload.bind(this, request));
+                    request.on('error', this._handleError.bind(this, request));
+                    request.on('response', this._handleResponse.bind(this, request));
+                    request.on('state', this._handleState.bind(this, request));
+
+                    // Submitting
+                    request.submit(data, (error, data) => callback && request === this.request && callback(error, data));
+
+                }, this.delay);
+            },
+
+            /*********************************************************************/
+
+            // OBSERVERS
+            observers: [
+                '_urlChanged(headers, hostname, method, parser, path, port, protocol, url)'
+            ],
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * If set to true, the request is automatically sent.
+                 *
+                 * @attribute auto
+                 * @type boolean
+                 * @default false
+                 */
+                auto: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The received data.
+                 *
+                 * @attribute data
+                 * @type *
+                 * @notifies
+                 * @readonly
+                 */
+                data: {
+                    notify: true,
+                    readOnly: true,
+                    value: null
+                },
+
+                /**
+                 * The ms of debounce between each request.
+                 *
+                 * @attribute delay
+                 * @type number
+                 */
+                delay: {
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The downloaded bytes.
+                 *
+                 * @attribute downLoaded
+                 * @type number
+                 * @default 0
+                 * @notifies
+                 * @readonly
+                 */
+                downLoaded: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: 0
+                },
+
+                /**
+                 * The download ratio.
+                 *
+                 * @attribute downRatio
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                downRatio: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The download total.
+                 *
+                 * @attribute downTotal
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                downTotal: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * If set to true, there is no received data.
+                 *
+                 * @attribute empty
+                 * @type boolean
+                 * @default true
+                 * @notifies
+                 * @readonly
+                 */
+                empty: {
+                    computed: '_computeEmpty(data)',
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: true
+                },
+
+                /**
+                 * The received error.
+                 *
+                 * @attribute error
+                 * @type Object
+                 * @notifies
+                 * @readonly
+                 */
+                error: {
+                    notify: true,
+                    readOnly: true,
+                    type: Object,
+                    value: null
+                },
+
+                /**
+                 * An object containing request headers.
+                 *
+                 * @attribute headers
+                 * @type Object
+                 * @default {}
+                 */
+                headers: {
+                    type: Object,
+                    value() { return {}; }
+                },
+
+                /**
+                 * The request's hostname.
+                 *
+                 * @attribute hostname
+                 * @type string
+                 */
+                hostname: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * How often to submit TCP KeepAlive packets over sockets being kept alive.
+                 *
+                 * @attribute keep-alive
+                 * @type number
+                 * @default 0
+                 */
+                keepAlive: {
+                    type: Number,
+                    value: 0
+                },
+
+                /**
+                 * A string specifying the HTTP request method.
+                 *
+                 * @attribute method
+                 * @type string
+                 * @default "GET"
+                 */
+                method: {
+                    type: String,
+                    value: 'GET'
+                },
+
+                /**
+                 * The type of data expected back from the server.
+                 *
+                 * @attribute parser
+                 * @type string
+                 * @default "json"
+                 */
+                parser: {
+                    type: String,
+                    value: 'json'
+                },
+
+                /**
+                 * The request's path.
+                 *
+                 * @attribute path
+                 * @type string
+                 */
+                path: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * The pending request.
+                 *
+                 * @attribute pending
+                 * @type Object
+                 * @readonly
+                 */
+                pending: {
+                    readOnly: true
+                },
+
+                /**
+                 * The request's port.
+                 *
+                 * @attribute port
+                 * @type number
+                 */
+                port: {
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The request's protocol.
+                 *
+                 * @attribute protocol
+                 * @type string
+                 */
+                protocol: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * The request's instance.
+                 *
+                 * @attribute request
+                 * @type Object
+                 * @readonly
+                 */
+                request: {
+                    observer: '_requestChanged',
+                    readOnly: true
+                },
+
+                /**
+                 * The request's state.
+                 *
+                 * @attribute state
+                 * @type string
+                 * @default "idle"
+                 * @notifies
+                 * @readonly
+                 */
+                state: {
+                    notify: true,
+                    observer: '_stateChanged',
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: String,
+                    value: 'idle'
+                },
+
+                /**
+                 * The request's status code.
+                 *
+                 * @attribute status-code
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                statusCode: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number
+                },
+
+                /**
+                 * The request's status code.
+                 *
+                 * @attribute status-message
+                 * @type string
+                 * @notifies
+                 * @readonly
+                 */
+                statusMessage: {
+                    notify: true,
+                    readOnly: true,
+                    type: String
+                },
+
+                /**
+                 * The request's url.
+                 *
+                 * @attribute url
+                 * @type string
+                 */
+                url: {
+                    type: String,
+                    value: null
+                }
+            },
+
+            /*********************************************************************/
+
+            // COMPUTER
+            _computeEmpty(data) {
+                return !data;
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _requestChanged() {
+
+                // Ensuring
+                this.ensure('data', null);
+                this.ensure('downLoaded', 0);
+                this.ensure('downRatio', null);
+                this.ensure('downTotal', null);
+                this.ensure('error', (this.request && this.request.error) || null);
+                this.ensure('statusCode', (this.request && this.request.statusCode) || null);
+                this.ensure('statusMessage', (this.request && this.request.statusMessage) || null);
+            },
+
+            // OBSERVER
+            _stateChanged() {
+
+                // Firing
+                if (this.state !== 'idle') { this.fire('xp-request-state', {state: this.state}); }
+            },
+
+            // OBSERVER
+            _urlChanged() {
+
+                // Resetting
+                this.reset();
+
+                // Submitting
+                if (this.auto) { this.submit(); }
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleData(request, data) {
+
+                // Checking
+                if (request !== this.request) { return; }
+
+                // Ensuring
+                this.ensure('data', data);
+
+                // Firing
+                this.fire('xp-request-data', {data: data});
+            },
+
+            // HANDLER
+            _handleDownload(request, loaded, total) {
+
+                // Checking
+                if (request !== this.request) { return; }
+
+                // Pushing
+                this.ensure('downLoaded', loaded);
+                this.ensure('downRatio', request.downRatio);
+
+                // Firing
+                this.fire('xp-request-download', {loaded: loaded, total: total});
+            },
+
+            // HANDLER
+            _handleError(request, error) {
+
+                // Checking
+                if (this.request && request.tsSubmit < this.request.tsSubmit) { return; }
+
+                // Ensuring
+                this.ensure('request', request);
+                this.ensure('error', error);
+
+                // Firing
+                this.fire('xp-request-error', {error: error});
+            },
+
+            // HANDLER
+            _handleResponse(request) {
+
+                // Checking
+                if (this.request && request.tsSubmit < this.request.tsSubmit) { return; }
+
+                // Ensuring
+                this.ensure('request', request);
+                this.ensure('downTotal', request.downTotal);
+                this.ensure('downRatio', request.downRatio);
+
+                // Firing
+                this.fire('xp-request-response', {statusCode: this.statusCode, statusMessage: this.statusMessage});
+            },
+
+            // HANDLER
+            _handleState(request, state) {
+
+                // Ensuring
+                if (request === this.pending) { this.ensure('state', state); }
+            }
+        });
+    </script>
+
+</dom-module>

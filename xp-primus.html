@@ -1,0 +1,391 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A web component used to exchange data with a Primus server.
+
+@element xp-primus
+@since 1.0.0
+@category functionality
+@description A web component used to exchange data with a Primus server
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-primus
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-primus.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-primus/xp-primus.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<dom-module id="xp-primus">
+
+    <template strip-whitespace>
+
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-primus',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPBaseBehavior
+            ],
+
+            // CLASSES
+            classes: ['primus'],
+
+            /*********************************************************************/
+
+            /**
+             * Fired when an error is received.
+             *
+             * @event xp-primus-error
+             * @param {string} error
+             * @bubbles
+             */
+
+            /**
+             * Fired when the client is offline.
+             *
+             * @event xp-primus-offline
+             * @bubbles
+             */
+
+            /**
+             * Fired when the client is online.
+             *
+             * @event xp-primus-online
+             * @bubbles
+             */
+
+            /**
+             * Fired when the socket is ready.
+             *
+             * @event xp-primus-ready
+             * @bubbles
+             */
+
+            /**
+             * Fired when the socket state changes.
+             *
+             * @event xp-primus-state
+             * @param {string} state
+             * @bubbles
+             */
+
+            /*********************************************************************/
+
+            /**
+             * Discards an event listener.
+             *
+             * @method discard
+             * @param {string} channel
+             * @param {string} [event]
+             * @param {Function} [handler]
+             */
+            discard(channel, event, handler) {
+
+                // Discarding
+                this.socket.discard(channel, event, handler);
+            },
+
+            /**
+             * Leaves the specified `channel`.
+             *
+             * @method leave
+             * @param {string} channel
+             * @param {Function} [callback]
+             */
+            leave(channel, callback) {
+
+                // Leaving
+                this.socket.leave(channel, callback);
+            },
+
+             /**
+             * Adds an event listener.
+             *
+             * @method on
+             * @param {string} channel
+             * @param {string} [event]
+             * @param {Function} [handler]
+             */
+            on(channel, event, handler) {
+
+                // Listening
+                this.socket.on(channel, event, handler);
+            },
+
+            /**
+             * Adds a one time event listener.
+             *
+             * @method once
+             * @param {string} channel
+             * @param {string} [event]
+             * @param {Function} [handler]
+             */
+            once(channel, event, handler) {
+
+                // Listening
+                this.socket.once(channel, event, handler);
+            },
+
+            /**
+             * Sends `data` to the `channel`, invoking the specified `event`.
+             *
+             * @method send
+             * @param {string} channel
+             * @param {string} event
+             * @param {Object} [data]
+             * @param {Function} [callback]
+             */
+            send(channel, event, data, callback) {
+
+                // Sending
+                this.socket.send(channel, event, data, callback);
+            },
+
+            /*********************************************************************/
+
+            // OBSERVERS
+            observers: [
+                '_urlChanged(global, hostname, pathname, port, protocol, query, url)'
+            ],
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * If set to true, the socket is connected.
+                 *
+                 * @attribute connected
+                 * @type boolean
+                 * @default false
+                 * @notifies
+                 * @readonly
+                 */
+                connected: {
+                    computed: '_computeConnected(state)',
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The global variable representing Primus.
+                 *
+                 * @attribute global
+                 * @type string
+                 * @default "Primus"
+                 */
+                global: {
+                    type: String,
+                    value: 'Primus'
+                },
+
+                /**
+                 * The connection hostname, usable in alternative to url.
+                 *
+                 * @attribute hostname
+                 * @type string
+                 */
+                hostname: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * If set to true, the client is offline.
+                 *
+                 * @attribute offline
+                 * @type boolean
+                 * @notifies
+                 * @readonly
+                 */
+                offline: {
+                    notify: true,
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: !navigator.onLine
+                },
+
+                /**
+                 * The library pathname.
+                 *
+                 * @attribute pathname
+                 * @type string
+                 */
+                pathname: {
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * The connection port, usable in alternative to url.
+                 *
+                 * @attribute port
+                 * @type number
+                 */
+                port: {
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The connection protocol, usable in alternative to url.
+                 *
+                 * @attribute protocol
+                 * @type string
+                 * @default "https:"
+                 */
+                protocol: {
+                    type: String,
+                    value: 'https:'
+                },
+
+                /**
+                 * The connection query.
+                 *
+                 * @attribute query
+                 * @type Object
+                 */
+                query: {
+                    type: Object,
+                    value: null
+                },
+
+                /**
+                 * The socket instance.
+                 *
+                 * @attribute socket
+                 * @type Object
+                 * @readonly
+                 */
+                socket: {
+                    readOnly: true
+                },
+
+                /**
+                 * The socket state.
+                 *
+                 * @attribute state
+                 * @type string
+                 * @default "idle"
+                 * @notifies
+                 * @readonly
+                 */
+                state: {
+                    notify: true,
+                    observer: '_stateChanged',
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: String,
+                    value: 'idle'
+                },
+
+                /**
+                 * The connection url.
+                 *
+                 * @attribute url
+                 * @type string
+                 */
+                url: {
+                    type: String,
+                    value: null
+                }
+            },
+
+            /*********************************************************************/
+
+            // COMPUTER
+            _computeConnected(state) {
+                return state === 'connected';
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _stateChanged() {
+
+                // Firing
+                if (this.state !== 'idle') { this.fire('xp-primus-state', {state: this.state}); }
+            },
+
+            // OBSERVER
+            _urlChanged() {
+
+                // Squashing
+                this.debounce('initializing', () => {
+
+                    // Checking
+                    if (this.socket) { this.socket.destroy(); }
+
+                    // Ensuring
+                    this.ensure('socket', new XPPrimus(XP.pick(this, ['global', 'hostname', 'pathname', 'port', 'protocol', 'query', 'url'])));
+
+                    // Listening
+                    this.on('error', this._handleError.bind(this));
+                    this.on('offline', this._handleLine.bind(this));
+                    this.on('online', this._handleLine.bind(this));
+                    this.on('ready', this._handleReady.bind(this));
+                    this.on('state', this._handleState.bind(this));
+                });
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleError(error) {
+
+                // Firing
+                this.fire('xp-primus-error', {error: error});
+            },
+
+            // HANDLER
+            _handleLine() {
+
+                // Ensuring
+                this.ensure('offline', this.socket.offline);
+
+                // Firing
+                this.fire(this.offline ? 'xp-primus-offline' : 'xp-primus-online');
+            },
+
+            // HANDLER
+            _handleReady() {
+
+                // Firing
+                this.fire('xp-primus-ready');
+            },
+
+            // HANDLER
+            _handleState(state) {
+
+                // Ensuring
+                this.ensure('state', state);
+            }
+        });
+    </script>
+
+</dom-module>

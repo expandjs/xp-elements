@@ -1,178 +1,104 @@
 <!--
 @license
-Copyright (c) 2015 The ExpandJS authors. All rights reserved.
+Copyright (c) 2015 The expand.js authors. All rights reserved.
 This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
 The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
 The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
 -->
 
 <!--
-The XP collection from ExpandJS.
+A collection of core web components from the expand.js team.
 
 @collection xp-elements
-@description The XP collection from ExpandJS
-@keywords expandjs, web app, custom elements, web-components
-@group collections
+@description A collection of core web components from the expand.js team
+@keywords expandjs, web components
+@category collections
 
-@homepage http://expandjs.com/elements
-@repository https://github.com/ExpandJS/xp-elements
-
-@dependency xp-anchor-behavior ExpandJS/xp-anchor-behavior#0.10.0
-@dependency xp-animation ExpandJS/xp-animation#0.10.0
-@dependency xp-common-behavior ExpandJS/xp-common-behavior#0.10.0
-@dependency xp-array-behavior ExpandJS/xp-array-behavior#0.10.0
-@dependency xp-breadcrumb-behavior ExpandJS/xp-breadcrumb-behavior#0.10.0
-@dependency xp-collapse-behavior ExpandJS/xp-collapse-behavior#0.10.0
-@dependency xp-commands-behavior ExpandJS/xp-commands-behavior#0.10.0
-@dependency xp-common-behavior ExpandJS/xp-common-behavior#0.10.0
-@dependency xp-cookie ExpandJS/xp-cookie#0.10.0
-@dependency xp-device ExpandJS/xp-device#0.10.0
-@dependency xp-dialog-behavior ExpandJS/xp-dialog-behavior#0.10.0
-@dependency xp-doc-parser ExpandJS/xp-doc-parser#0.10.0
-@dependency xp-emitter ExpandJS/xp-emitter#0.10.0
-@dependency xp-finder-behavior ExpandJS/xp-finder-behavior#0.10.0
-@dependency xp-focused-behavior ExpandJS/xp-focused-behavior#0.10.0
-@dependency xp-form ExpandJS/xp-form#0.10.0
-@dependency xp-grid ExpandJS/xp-grid#0.10.0
-@dependency xp-i18n-behavior ExpandJS/xp-i18n-behavior#0.10.0
-@dependency xp-icon-behavior ExpandJS/xp-icon-behavior#0.10.0
-@dependency xp-iconset ExpandJS/xp-iconset#0.10.0
-@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.10.0
-@dependency xp-label-behavior ExpandJS/xp-label-behavior#0.10.0
-@dependency xp-list-behavior ExpandJS/xp-list-behavior#0.10.0
-@dependency xp-markdown ExpandJS/xp-markdown#0.10.0
-@dependency xp-master-behavior ExpandJS/xp-master-behavior#0.10.0
-@dependency xp-media-query ExpandJS/xp-media-query#0.10.0
-@dependency xp-menu-behavior ExpandJS/xp-menu-behavior#0.10.0
-@dependency xp-meta ExpandJS/xp-meta#0.10.0
-@dependency xp-object-behavior ExpandJS/xp-object-behavior#0.10.0
-@dependency xp-observer ExpandJS/xp-observer#0.10.0
-@dependency xp-overlay ExpandJS/xp-overlay#0.10.0
-@dependency xp-pages ExpandJS/xp-pages#0.10.0
-@dependency xp-pressed-behavior ExpandJS/xp-pressed-behavior#0.10.0
-@dependency xp-progress-behavior ExpandJS/xp-progress-behavior#0.10.0
-@dependency xp-refirer-behavior ExpandJS/xp-refirer-behavior#0.10.0
-@dependency xp-request ExpandJS/xp-request#0.10.0
-@dependency xp-router ExpandJS/xp-router#0.10.0
-@dependency xp-schema ExpandJS/xp-schema#0.10.0
-@dependency xp-script ExpandJS/xp-script#0.10.0
-@dependency xp-selector ExpandJS/xp-selector#0.10.0
-@dependency xp-shared-behavior ExpandJS/xp-shared-behavior#0.10.0
-@dependency xp-shell-behavior ExpandJS/xp-shell-behavior#0.10.0
-@dependency xp-slave-behavior ExpandJS/xp-slave-behavior#0.10.0
-@dependency xp-snackbar-behavior ExpandJS/xp-snackbar-behavior#0.10.0
-@dependency xp-spinner-behavior ExpandJS/xp-spinner-behavior#0.10.0
-@dependency xp-table-behavior ExpandJS/xp-table-behavior#0.10.0
-@dependency xp-targeter-behavior ExpandJS/xp-targeter-behavior#0.10.0
-@dependency xp-toast-behavior ExpandJS/xp-toast-behavior#0.10.0
-@dependency xp-tooltip-behavior ExpandJS/xp-tooltip-behavior#0.10.0
-@dependency xp-window ExpandJS/xp-window#0.10.0
+@homepage https://expandjs.com/components
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/components.html
 -->
 
-<link rel="import" href="../xp-anchor-behavior/xp-anchor-behavior.html">
-<link rel="import" href="../xp-anchor-behavior/xp-anchor-styles.html">
-<link rel="import" href="../xp-animation/xp-animation-group.html">
-<link rel="import" href="../xp-animation/xp-animation.html">
-<link rel="import" href="../xp-array-behavior/xp-array-behavior.html">
-<link rel="import" href="../xp-breadcrumb-behavior/xp-breadcrumb-behavior.html">
-<link rel="import" href="../xp-breadcrumb-behavior/xp-breadcrumb-step-behavior.html">
-<link rel="import" href="../xp-breadcrumb-behavior/xp-breadcrumb-step-styles.html">
-<link rel="import" href="../xp-breadcrumb-behavior/xp-breadcrumb-styles.html">
-<link rel="import" href="../xp-collapse-behavior/xp-collapse-behavior.html">
-<link rel="import" href="../xp-collapse-behavior/xp-collapse-styles.html">
-<link rel="import" href="../xp-commands-behavior/xp-commands-behavior.html">
-<link rel="import" href="../xp-common-behavior/xp-common-behavior.html">
-<link rel="import" href="../xp-cookie/xp-cookie.html">
-<link rel="import" href="../xp-device/xp-device-behavior.html">
-<link rel="import" href="../xp-device/xp-device.html">
-<link rel="import" href="../xp-dialog-behavior/xp-dialog-behavior.html">
-<link rel="import" href="../xp-dialog-behavior/xp-dialog-styles.html">
-<link rel="import" href="../xp-dialog-behavior/xp-dialog-wrapper.html">
-<link rel="import" href="../xp-doc-parser/xp-doc-parser.html">
-<link rel="import" href="../xp-emitter/xp-emitter.html">
-<link rel="import" href="../xp-finder-behavior/xp-finder-behavior.html">
-<link rel="import" href="../xp-focused-behavior/xp-focused-behavior.html">
-<link rel="import" href="../xp-focused-behavior/xp-focused-styles.html">
-<link rel="import" href="../xp-form/xp-form-wrapper.html">
-<link rel="import" href="../xp-form/xp-form.html">
-<link rel="import" href="../xp-grid/xp-grid.html">
-<link rel="import" href="../xp-i18n-behavior/xp-i18n-behavior.html">
-<link rel="import" href="../xp-icon-behavior/xp-icon-behavior.html">
-<link rel="import" href="../xp-icon-behavior/xp-icon-styles.html">
-<link rel="import" href="../xp-iconset/xp-iconset-finder.html">
-<link rel="import" href="../xp-iconset/xp-iconset.html">
-<link rel="import" href="../xp-input-behavior/xp-input-behavior.html">
-<link rel="import" href="../xp-input-behavior/xp-input-styles.html">
-<link rel="import" href="../xp-label-behavior/xp-label-behavior.html">
-<link rel="import" href="../xp-label-behavior/xp-label-styles.html">
-<link rel="import" href="../xp-list-behavior/xp-list-behavior.html">
-<link rel="import" href="../xp-list-behavior/xp-list-styles.html">
-<link rel="import" href="../xp-list-behavior/xp-sublist-behavior.html">
-<link rel="import" href="../xp-list-behavior/xp-sublist-styles.html">
-<link rel="import" href="../xp-markdown/xp-markdown.html">
-<link rel="import" href="../xp-master-behavior/xp-master-behavior.html">
-<link rel="import" href="../xp-media-query/xp-media-queries.html">
-<link rel="import" href="../xp-media-query/xp-media-query.html">
-<link rel="import" href="../xp-menu-behavior/xp-menu-behavior.html">
-<link rel="import" href="../xp-menu-behavior/xp-menu-styles.html">
-<link rel="import" href="../xp-menu-behavior/xp-menu-wrapper.html">
-<link rel="import" href="../xp-menu-behavior/xp-submenu-behavior.html">
-<link rel="import" href="../xp-menu-behavior/xp-submenu-styles.html">
-<link rel="import" href="../xp-meta/xp-meta.html">
-<link rel="import" href="../xp-object-behavior/xp-object-behavior.html">
-<link rel="import" href="../xp-observer/xp-observer.html">
-<link rel="import" href="../xp-overlay/xp-overlay-behavior.html">
-<link rel="import" href="../xp-overlay/xp-overlay-injector.html">
-<link rel="import" href="../xp-overlay/xp-overlay-styles.html">
-<link rel="import" href="../xp-overlay/xp-overlay-wrapper.html">
-<link rel="import" href="../xp-overlay/xp-overlay.html">
-<link rel="import" href="../xp-pages/xp-page-behavior.html">
-<link rel="import" href="../xp-pages/xp-page-styles.html">
-<link rel="import" href="../xp-pages/xp-page.html">
-<link rel="import" href="../xp-pages/xp-pages-behavior.html">
-<link rel="import" href="../xp-pages/xp-pages-styles.html">
-<link rel="import" href="../xp-pages/xp-pages.html">
-<link rel="import" href="../xp-pressed-behavior/xp-pressed-behavior.html">
-<link rel="import" href="../xp-pressed-behavior/xp-pressed-styles.html">
-<link rel="import" href="../xp-progress-behavior/xp-progress-behavior.html">
-<link rel="import" href="../xp-progress-behavior/xp-progress-styles.html">
-<link rel="import" href="../xp-refirer-behavior/xp-refirer-behavior.html">
-<link rel="import" href="../xp-request/xp-request.html">
-<link rel="import" href="../xp-router/xp-route.html">
-<link rel="import" href="../xp-router/xp-router.html">
-<link rel="import" href="../xp-schema/xp-schema.html">
-<link rel="import" href="../xp-script/xp-script.html">
-<link rel="import" href="../xp-selector/xp-selector.html">
-<link rel="import" href="../xp-selector/xp-selector-behavior.html">
-<link rel="import" href="../xp-selector/xp-selector-multi-behavior.html">
-<link rel="import" href="../xp-shared-behavior/xp-shared-behavior.html">
-<link rel="import" href="../xp-shell-behavior/xp-shell-behavior.html">
-<link rel="import" href="../xp-shell-behavior/xp-shell-styles.html">
-<link rel="import" href="../xp-slave-behavior/xp-slave-behavior.html">
-<link rel="import" href="../xp-snackbar-behavior/xp-snackbar-behavior.html">
-<link rel="import" href="../xp-snackbar-behavior/xp-snackbar-styles.html">
-<link rel="import" href="../xp-spinner-behavior/xp-spinner-behavior.html">
-<link rel="import" href="../xp-spinner-behavior/xp-spinner-styles.html">
-<link rel="import" href="../xp-table-behavior/xp-table-behavior.html">
-<link rel="import" href="../xp-table-behavior/xp-table-styles.html">
-<link rel="import" href="../xp-table-behavior/xp-tbody-behavior.html">
-<link rel="import" href="../xp-table-behavior/xp-tbody-styles.html">
-<link rel="import" href="../xp-table-behavior/xp-td-behavior.html">
-<link rel="import" href="../xp-table-behavior/xp-td-styles.html">
-<link rel="import" href="../xp-table-behavior/xp-th-behavior.html">
-<link rel="import" href="../xp-table-behavior/xp-th-styles.html">
-<link rel="import" href="../xp-table-behavior/xp-thead-behavior.html">
-<link rel="import" href="../xp-table-behavior/xp-thead-styles.html">
-<link rel="import" href="../xp-table-behavior/xp-tr-behavior.html">
-<link rel="import" href="../xp-table-behavior/xp-tr-styles.html">
-<link rel="import" href="../xp-tabs-behavior/xp-tab-behavior.html">
-<link rel="import" href="../xp-tabs-behavior/xp-tab-styles.html">
-<link rel="import" href="../xp-tabs-behavior/xp-tabs-behavior.html">
-<link rel="import" href="../xp-tabs-behavior/xp-tabs-styles.html">
-<link rel="import" href="../xp-targeter-behavior/xp-targeter-behavior.html">
-<link rel="import" href="../xp-toast-behavior/xp-toast-behavior.html">
-<link rel="import" href="../xp-toast-behavior/xp-toast-styles.html">
-<link rel="import" href="../xp-tooltip-behavior/xp-tooltip-behavior.html">
-<link rel="import" href="../xp-tooltip-behavior/xp-tooltip-styles.html">
-<link rel="import" href="../xp-window/xp-window.html">
-<link rel="import" href="../xp-wrapper-behavior/xp-wrapper-behavior.html">
+<link rel="import" href="xp-analytics.html">
+<link rel="import" href="xp-anchor-behavior.html">
+<link rel="import" href="xp-anchor-styles.html">
+<link rel="import" href="xp-animation-group.html">
+<link rel="import" href="xp-animation.html">
+<link rel="import" href="xp-base-behavior.html">
+<link rel="import" href="xp-breadcrumb-behavior.html">
+<link rel="import" href="xp-breadcrumb-step-behavior.html">
+<link rel="import" href="xp-breadcrumb-step-styles.html">
+<link rel="import" href="xp-breadcrumb-styles.html">
+<link rel="import" href="xp-collapse-behavior.html">
+<link rel="import" href="xp-collapse-styles.html">
+<link rel="import" href="xp-collapse.html">
+<link rel="import" href="xp-cookie.html">
+<link rel="import" href="xp-dialog-behavior.html">
+<link rel="import" href="xp-dialog-styles.html">
+<link rel="import" href="xp-dialog-wrapper.html">
+<link rel="import" href="xp-doc-parser.html">
+<link rel="import" href="xp-emitter.html">
+<link rel="import" href="xp-finder-behavior.html">
+<link rel="import" href="xp-focused-behavior.html">
+<link rel="import" href="xp-focused-styles.html">
+<link rel="import" href="xp-form-wrapper.html">
+<link rel="import" href="xp-form.html">
+<link rel="import" href="xp-grid.html">
+<link rel="import" href="xp-icon-behavior.html">
+<link rel="import" href="xp-icon-styles.html">
+<link rel="import" href="xp-iconset-finder.html">
+<link rel="import" href="xp-iconset.html">
+<link rel="import" href="xp-input-behavior.html">
+<link rel="import" href="xp-input-checked-behavior.html">
+<link rel="import" href="xp-input-styles.html">
+<link rel="import" href="xp-input-value-behavior.html">
+<link rel="import" href="xp-label-behavior.html">
+<link rel="import" href="xp-label-styles.html">
+<link rel="import" href="xp-list-behavior.html">
+<link rel="import" href="xp-list-styles.html">
+<link rel="import" href="xp-markdown.html">
+<link rel="import" href="xp-master-slave-behavior.html">
+<link rel="import" href="xp-media-queries.html">
+<link rel="import" href="xp-media-query.html">
+<link rel="import" href="xp-menu-behavior.html">
+<link rel="import" href="xp-menu-styles.html">
+<link rel="import" href="xp-menu-wrapper.html">
+<link rel="import" href="xp-overlay-behavior.html">
+<link rel="import" href="xp-overlay-injector.html">
+<link rel="import" href="xp-overlay-styles.html">
+<link rel="import" href="xp-overlay-wrapper.html">
+<link rel="import" href="xp-overlay.html">
+<link rel="import" href="xp-page-behavior.html">
+<link rel="import" href="xp-page-styles.html">
+<link rel="import" href="xp-pages-behavior.html">
+<link rel="import" href="xp-pages-styles.html">
+<link rel="import" href="xp-pressed-behavior.html">
+<link rel="import" href="xp-pressed-styles.html">
+<link rel="import" href="xp-primus.html">
+<link rel="import" href="xp-progress-behavior.html">
+<link rel="import" href="xp-progress-styles.html">
+<link rel="import" href="xp-request.html">
+<link rel="import" href="xp-schema.html">
+<link rel="import" href="xp-script.html">
+<link rel="import" href="xp-selector-behavior.html">
+<link rel="import" href="xp-selector-multi-behavior.html">
+<link rel="import" href="xp-selector.html">
+<link rel="import" href="xp-snackbar-behavior.html">
+<link rel="import" href="xp-snackbar-styles.html">
+<link rel="import" href="xp-spinner-behavior.html">
+<link rel="import" href="xp-spinner-styles.html">
+<link rel="import" href="xp-sublist-behavior.html">
+<link rel="import" href="xp-sublist-styles.html">
+<link rel="import" href="xp-submenu-behavior.html">
+<link rel="import" href="xp-submenu-styles.html">
+<link rel="import" href="xp-tab-behavior.html">
+<link rel="import" href="xp-tab-styles.html">
+<link rel="import" href="xp-tabs-behavior.html">
+<link rel="import" href="xp-tabs-styles.html">
+<link rel="import" href="xp-targeter-behavior.html">
+<link rel="import" href="xp-toast-behavior.html">
+<link rel="import" href="xp-toast-styles.html">
+<link rel="import" href="xp-tooltip-behavior.html">
+<link rel="import" href="xp-tooltip-styles.html">
+<link rel="import" href="xp-uploader.html">
+<link rel="import" href="xp-wrapper-behavior.html">

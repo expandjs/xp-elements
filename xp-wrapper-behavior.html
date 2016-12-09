@@ -1,0 +1,93 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add wrapping capabilities on a web component.
+
+@behavior xp-wrapper-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add wrapping capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-wrapper-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-wrapper-behavior.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<script>
+    Polymer.XPWrapperBehaviorImp = {
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * A map used to bind attributes arrays to their respective owner.
+             *
+             * @attribute wrapped
+             * @type Object
+             * @readonly
+             */
+            wrapped: {
+                readOnly: true,
+                type: Object,
+                value() { return {}; }
+            }
+        },
+
+        /*********************************************************************/
+
+        // OBSERVER
+        __wrappedChanged(post) {
+
+            // Let
+            let property   = post && Object.keys(this.__data__).find(key => this.__data__[key] === post && key.indexOf('.') < 0),
+                attributes = property && this.wrapped[property];
+
+            // Checking
+            if (!attributes) { return; }
+
+            // Iterating
+            attributes.forEach(attribute => {
+
+                // Let
+                let to   = XP.isUseful(this[attribute]) ? post : this,
+                    from = XP.isUseful(this[attribute]) ? this : post;
+
+                // Ensuring
+                this.ensure(attribute, from[attribute], to);
+
+                // Linking
+                this.linkProperties(attribute, attribute, post);
+            });
+        },
+
+        /*********************************************************************/
+
+        // LISTENER
+        ready() {
+
+            // Let
+            let root = Polymer.dom(this.root);
+
+            // Wrapping
+            this.async(() => Object.keys(this.wrapped).forEach(key => this[key] || this.ensure(key, root.querySelector(`.${XP.kebabCase(key)}`))));
+        }
+    };
+
+    Polymer.XPWrapperBehavior = [
+        Polymer.XPBaseBehavior,
+        Polymer.XPWrapperBehaviorImp
+    ];
+</script>

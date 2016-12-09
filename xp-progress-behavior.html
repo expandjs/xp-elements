@@ -1,0 +1,338 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add progress capabilities on a web component.
+
+@behavior xp-progress-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add progress capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-progress-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-progress-behavior.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<script>
+    Polymer.XPProgressBehaviorImp = {
+
+        // CLASSES
+        classes: ['progress'],
+
+        /*********************************************************************/
+
+        /**
+         * Fired on hide.
+         *
+         * @event xp-hide
+         * @bubbles
+         */
+
+        /**
+         * Fired when the buffering state changes.
+         *
+         * @event xp-progress-buffer
+         * @param {boolean} isBuffering
+         * @bubbles
+         */
+
+        /**
+         * Fired when the progress state changes.
+         *
+         * @event xp-progress-state
+         * @param {string} state
+         * @bubbles
+         */
+
+        /**
+         * Fired on show.
+         *
+         * @event xp-show
+         * @bubbles
+         */
+
+        /*********************************************************************/
+
+        /**
+         * Hides the progress.
+         *
+         * @method hide
+         */
+        hide() {
+            this.showed = false;
+        },
+
+        /**
+         * Shows the progress.
+         *
+         * @method show
+         */
+        show() {
+            this.showed = true;
+        },
+
+        /**
+         * Toggles the progress.
+         *
+         * @method toggle
+         */
+        toggle() {
+            this.showed = !this.showed;
+        },
+
+        /*********************************************************************/
+
+        // OBSERVERS
+        observers: [
+            '__bufferRatioChanged(mode, bufferBar, bufferRatio)',
+            '__ratioChanged(mode, bar, ratio)'
+        ],
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * The progress bar.
+             *
+             * @attribute bar
+             * @type Element
+             * @readonly
+             */
+            bar: {
+                readOnly: true,
+                selector: '.bar.progress'
+            },
+
+            /**
+             * The progress buffering bar.
+             *
+             * @attribute buffer-bar
+             * @type Element
+             * @readonly
+             */
+            bufferBar: {
+                readOnly: true,
+                selector: '.bar.buffer'
+            },
+
+            /**
+             * The progress buffering ratio.
+             *
+             * @attribute buffer-ratio
+             * @type number
+             * @notifies
+             * @readonly
+             */
+            bufferRatio: {
+                computed: '_computeRatio(bufferValue, min, max)',
+                notify: true,
+                type: Number
+            },
+
+            /**
+             * The progress buffering value.
+             *
+             * @attribute buffer-value
+             * @type number
+             */
+            bufferValue: {
+                type: Number
+            },
+
+            /**
+             * If set to true, the progress is buffering.
+             *
+             * @attribute buffering
+             * @type boolean
+             * @default false
+             * @notifies
+             * @readonly
+             */
+            buffering: {
+                computed: '_computeBuffering(bufferRatio)',
+                notify: true,
+                observer: '__bufferingChanged',
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * If set to true, the progress is loaded.
+             *
+             * @attribute loaded
+             * @type boolean
+             * @default false
+             * @notifies
+             * @readonly
+             */
+            loaded: {
+                computed: '_computeLoaded(bufferRatio)',
+                notify: true,
+                observer: '__loadedChanged',
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * The progress maximum value.
+             *
+             * @attribute max
+             * @type number
+             * @default 100
+             */
+            max: {
+                type: Number,
+                value: 100
+            },
+
+            /**
+             * The progress minimum value.
+             *
+             * @attribute min
+             * @type number
+             * @default 0
+             */
+            min: {
+                type: Number,
+                value: 0
+            },
+
+            /**
+             * The progress mode.
+             *
+             * @attribute mode
+             * @type "buffer" | "determinate" | "indeterminate" | "query"
+             * @default "determinate"
+             */
+            mode: {
+                reflectToAttribute: true,
+                type: String,
+                value: 'determinate'
+            },
+
+            /**
+             * The progress ratio.
+             *
+             * @attribute ratio
+             * @type number
+             * @notifies
+             * @readonly
+             */
+            ratio: {
+                computed: '_computeRatio(value, min, max)',
+                notify: true,
+                type: Number
+            },
+
+            /**
+             * If set to true, the progress is visible.
+             *
+             * @attribute active
+             * @type boolean
+             * @default false
+             * @notifies
+             */
+            showed: {
+                notify: true,
+                observer: '__showedChanged',
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
+             * The progress value.
+             *
+             * @attribute value
+             * @type number
+             */
+            value: {
+                type: Number
+            }
+        },
+
+        /**
+         * The list of possible modes.
+         *
+         * @property modes
+         * @type Array
+         * @default ["buffer", "determinate", "indeterminate", "query"]
+         * @readonly
+         */
+        modes: ['buffer', 'determinate', 'indeterminate', 'query'],
+
+        /*********************************************************************/
+
+        // COMPUTER
+        _computeBuffering(bufferRatio) {
+            return bufferRatio < 1;
+        },
+
+        // COMPUTER
+        _computeLoaded(bufferRatio) {
+            return bufferRatio >= 1;
+        },
+
+        // COMPUTER
+        _computeRatio(value, min, max) {
+            try { return XP.ratio(value, min, max); } catch (exc) { return null; }
+        },
+
+        /*********************************************************************/
+
+        // OBSERVER
+        __bufferRatioChanged() {
+
+            // Styling
+            if (this.bufferBar) { this.bufferBar.style.transform = `scale(${this.mode === `buffer` ? this.bufferRatio || 0 : 1}, 1)`; }
+        },
+
+        // OBSERVER
+        __bufferingChanged() {
+
+            // Firing
+            this.fire('xp-progress-buffer', {isBuffering: this.buffering});
+        },
+
+        // OBSERVER
+        __loadedChanged() {
+
+            // Firing
+            this.fire('xp-progress-load', {isLoaded: this.loaded});
+        },
+
+        // OBSERVER
+        __ratioChanged() {
+
+            // Styling
+            if (this.bar) { this.bar.style.transform = `scale(${this.ratio || 0}, 1)`; }
+        },
+
+        // OBSERVER
+        __showedChanged() {
+
+            // Firing
+            if (this.isAttached) { this.fire(this.showed ? 'xp-show' : 'xp-hide'); }
+        }
+    };
+
+    Polymer.XPProgressBehavior = [
+        Polymer.XPBaseBehavior,
+        Polymer.XPProgressBehaviorImp
+    ];
+</script>

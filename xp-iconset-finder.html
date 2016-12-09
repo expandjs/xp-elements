@@ -1,0 +1,65 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add iconset finding capabilities on a web component.
+
+@behavior xp-iconset-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add iconset finding capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-iconset-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-iconset-behavior.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<script>
+    Polymer.XPIconsetFinderImp = {
+
+        /**
+         * Returns an iconset.
+         *
+         * @method findIconset
+         * @param {string} name
+         * @returns {Element}
+         */
+        findIconset(name) {
+
+            // Asserting
+            XP.assertArgument(XP.isVoid(name) || XP.isString(name), 1, 'string');
+
+            // Finding
+            return (name && this.icons[name]) || null;
+        },
+
+        /*********************************************************************/
+
+        /**
+         * The icons' sets.
+         *
+         * @property icons
+         * @type Object
+         * @default {}
+         * @readonly
+         */
+        icons: {}
+    };
+
+    Polymer.XPIconsetFinder = [
+        Polymer.XPBaseBehavior,
+        Polymer.XPIconsetFinderImp
+    ];
+</script>

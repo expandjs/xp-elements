@@ -1,0 +1,82 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+A behavior used to add meta parsing capabilities on a web component.
+
+@behavior xp-meta-behavior
+@since 1.0.0
+@category behaviors
+@description A behavior used to add meta parsing capabilities on a web component
+@keywords expandjs, web components
+
+@homepage https://expandjs.com/components/xp-meta-behavior
+@repository https://github.com/expandjs/xp-elements
+@source https://github.com/expandjs/xp-elements/blob/master/xp-meta-behavior.html
+
+@behavior xp-base-behavior /bower_components/xp-elements/xp-base-behavior.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="xp-base-behavior.html">
+
+<script>
+    Polymer.XPMetaBehaviorImp = {
+
+        // CLASSES
+        classes: ['meta'],
+
+        /*********************************************************************/
+
+        // PROPERTIES
+        properties: {
+
+            /**
+             * The meta's data.
+             *
+             * @attribute data
+             * @type Object
+             * @notifies
+             * @readonly
+             */
+            data: {
+                notify: true,
+                readOnly: true,
+                type: Object
+            }
+        },
+
+        /*********************************************************************/
+
+        // LISTENER
+        mutated() {
+
+            // Finding
+            let elements = XP.findElements(Polymer.dom(this), 'property[path]:not([path=""])');
+
+            // Parsing
+            let result = elements.reduce((result, property) => XP.set(result, `data.${property.getAttribute('path')}`, XP.parsePrimitive(property.getAttribute('value'))), {});
+
+            // Ensuring
+            this.ensure('data', result.data || {});
+        },
+
+        // LISTENER
+        ready() {
+
+            // Observing
+            Polymer.dom(this).observeNodes(this.mutated.bind(this));
+        }
+    };
+
+    Polymer.XPMetaBehavior = [
+        Polymer.XPBaseBehavior,
+        Polymer.XPMetaBehaviorImp
+    ];
+</script>
