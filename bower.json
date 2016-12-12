@@ -22,7 +22,7 @@
     "expandjs": "ExpandJS/expandjs#^1.0.0",
     "iron-flex-layout":  "PolymerElements/iron-flex-layout#^1.0.0",
     "markdown-it": "Markdown-it/markdown-it#^8.0.0",
-    "polymer": "Polymer/polymer#^1.7.0",
+    "polymer": "Grullo90/polymer#^1.7.0",
     "prism": "PrismJS/prism#^1.5.0",
     "web-animations-js": "Web-Animations/web-animations-js#^2.0.0",
     "xp-buffer": "ExpandJS/xp-buffer#^1.0.0",
