@@ -67,15 +67,17 @@ A web component used to load google analytics.
                  * Sends a page view hit.
                  *
                  * @method pageView
-                 * @param {string} [page]
+                 * @param {string} [path]
+                 * @param {string} [title]
                  */
-                pageView(page) {
+                pageView(path, title) {
 
                     // Asserting
-                    XP.assertArgument(XP.isVoid(page) || XP.isString(page, true), 1, 'string');
+                    XP.assertArgument(XP.isVoid(path) || XP.isString(path, true), 1, 'string');
+                    XP.assertArgument(XP.isVoid(title) || XP.isString(title, true), 2, 'string');
 
                     // Sending hit
-                    ga('send', 'pageview', page);
+                    ga('send', {hitType: 'pageview', page: path, title: title || document.title});
                 },
 
                 /*********************************************************************/
