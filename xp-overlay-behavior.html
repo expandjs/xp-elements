@@ -42,6 +42,13 @@ A behavior used to add overlaying capabilities on a web component.
          */
 
         /**
+         * Fired on attached.
+         *
+         * @event xp-overlay
+         * @bubbles
+         */
+
+        /**
          * Fired on show.
          *
          * @event xp-show
@@ -226,6 +233,13 @@ A behavior used to add overlaying capabilities on a web component.
         },
 
         /*********************************************************************/
+
+        // LISTENER
+        attached() {
+
+            // Firing
+            requestAnimationFrame(() => this.fire('xp-overlay'));
+        },
 
         // LISTENER
         created() {

@@ -44,6 +44,13 @@ A behavior used to add overlay wrapping capabilities on a web component.
          */
 
         /**
+         * Fired on attached.
+         *
+         * @event xp-overlay
+         * @bubbles
+         */
+
+        /**
          * Fired on show.
          *
          * @event xp-show
@@ -172,6 +179,7 @@ A behavior used to add overlay wrapping capabilities on a web component.
 
             // Listening
             if (post) { this.listen(post, 'xp-hide', '__handleRefire'); }
+            if (post) { this.listen(post, 'xp-overlay', '__handleRefire'); }
             if (post) { this.listen(post, 'xp-show', '__handleRefire'); }
         },
 

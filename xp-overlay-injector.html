@@ -50,9 +50,11 @@ A behavior used to add overlay injection capabilities on a web component.
             XP.assertArgument(XP.isVoid(callback) || XP.isFunction(callback), 4, 'Function');
 
             // Let
-            let injected = XP.isString(element) ? document.createElement(element.toLowerCase()) : element,
-                listener = XP.debounce(() => !injected.showed && Polymer.dom(Polymer.dom(injected).parentNode).removeChild(XP.unlisten(injected, 'showed-changed', listener)), 500),
-                shell    = XP.matches(this, '.shell') ? this : XP.findParentElement(this, '.shell') || document.body;
+            let showed,
+                injected  = XP.isString(element) ? document.createElement(element.toLowerCase()) : element,
+                listener1 = event => this.firer(event) === injected && XP.call(injected, 'show'),
+                listener2 = XP.debounce(event => this.firer(event) === injected && !showed !== !event.detail.value && !event.detail.value ? Polymer.dom(Polymer.dom(injected).parentNode).removeChild(XP.unlisten(injected, 'xp-overlay', listener1) && XP.unlisten(injected, 'showed-changed', listener2)) : showed = event.detail.value, 500),
+                shell     = XP.matches(this, '.shell') ? this : XP.findParentElement(this, '.shell') || document.body;
 
             // Ensuring
             if (injected) { this.ensure('target', this, injected); }
@@ -60,15 +62,14 @@ A behavior used to add overlay injection capabilities on a web component.
             if (data)     { this.ensure('data', data, injected); }
             if (callback) { this.ensure('callback', callback, injected); }
 
+            // Listening
+            XP.listen(injected, 'xp-overlay', listener1);
+            XP.listen(injected, 'showed-changed', listener2);
+
             // Appending
             Polymer.dom(shell.root || shell).appendChild(injected);
 
-            // Listening
-            XP.listen(injected, 'showed-changed', listener);
-
-            // Showing
-            requestAnimationFrame(() => requestAnimationFrame(() => XP.call(injected, 'show')));
-
+            // Returning
             return injected;
         }
     };
