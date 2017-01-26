@@ -107,6 +107,23 @@ A behavior used to add selection capabilities on a web component.
         },
 
         /**
+         * Refreshes the selection.
+         *
+         * @method refreshSelection
+         */
+        refreshSelection() {
+
+            // Ensuring
+            if (!this.multi) { this.ensure('selectedData', this.get('selectedItem.data') || null); }
+
+            // Overwriting
+            if (this.multi) { this.overwrite('selectedData', this.selectedItem ? this.selectedItem.map(item => item.data || null) : []); }
+
+            // Mutating
+            if (this.items) { this.items.forEach(item => XP.setAttribute(item, this.selectedAttribute, this.isSelected(item, true))); }
+        },
+
+        /**
          * Resets the selection.
          *
          * @method resetSelection
@@ -280,8 +297,7 @@ A behavior used to add selection capabilities on a web component.
 
         // LISTENERS
         listeners: {
-            'click': '__handleSelection',
-            'data-changed': '__handleData'
+            'click': '__handleSelection'
         },
 
         // OBSERVERS
@@ -513,14 +529,8 @@ A behavior used to add selection capabilities on a web component.
             // Propagating
             this.__itemsChanged.apply(this, arguments);
 
-            // Ensuring
-            if (!this.multi) { this.ensure('selectedData', this.get('selectedItem.data') || null); }
-
-            // Overwriting
-            if (this.multi) { this.overwrite('selectedData', this.selectedItem ? this.selectedItem.map(item => item.data || null) : []); }
-
-            // Mutating
-            if (this.items) { this.items.forEach(item => XP.setAttribute(item, this.selectedAttribute, this.isSelected(item, true))); }
+            // Refreshing
+            this.refreshSelection();
         },
 
         /*********************************************************************/
@@ -533,22 +543,6 @@ A behavior used to add selection capabilities on a web component.
         },
 
         /*********************************************************************/
-
-        // HANDLER
-        __handleData(event) {
-
-            // Let
-            let firer = this.firer(event);
-
-            // Checking
-            if (event.detail.path) { return; }
-
-            // Overwriting
-            if (this.multi && this.selectedItem.includes(firer)) { this.overwrite('selectedData', this.selectedItem.map(item => item.data || null)); }
-
-            // Ensuring
-            if (!this.multi && this.selectedItem === firer) { this.ensure('selectedData', this.get('selectedItem.data') || null); }
-        },
 
         // HANDLER
         __handleSelection(event) {
