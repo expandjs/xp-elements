@@ -260,8 +260,8 @@ A behavior used to add item finding capabilities on a web component.
         __itemsChanged() {
 
             // Ensuring
-            this.ensure('found', !!this.items && this.items.length > 0);
-            this.ensure('foundOne', !!this.items && this.items.length === 1);
+            this.ensure('found', this.items ? this.items.length > 0 : false);
+            this.ensure('foundOne', this.items ? this.items.length === 1 : false);
 
             // Firing
             this.fire('xp-items', {items: this.items});
