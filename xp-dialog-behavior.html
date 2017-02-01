@@ -56,6 +56,18 @@ A behavior used to add dialog capabilities on a web component.
         properties: {
 
             /**
+             * If set to true, clicking outside will close the dialog.
+             *
+             * @attribute auto-hide
+             * @type boolean
+             * @default false
+             */
+            autoHide: {
+                type: Boolean,
+                value: false
+            },
+
+            /**
              * If set to true, the dialog is full screen.
              *
              * @attribute full-screen
@@ -143,6 +155,33 @@ A behavior used to add dialog capabilities on a web component.
 
             // Hiding
             if (this.autoHide && !event.button) { this.hide(); }
+        },
+
+        // HANDLER
+        __handleHide(event) {
+
+            // Frame 1
+            requestAnimationFrame(() => {
+
+                // Setting
+                if (event.keyCode === 27 && !event.defaultPrevented) { event.hiding = this; }
+
+                // Frame 2
+                requestAnimationFrame(() => {
+
+                    // Checking
+                    if (event.hiding !== this) { return; }
+
+                    // Unlistening
+                    this.unlisten(this, 'click', '__handlePush');
+                    this.unlisten(window, 'click', '__handleHide');
+                    this.unlisten(window, 'keyup', '__handleHide');
+                    this.unlisten(window, 'resize', '__handleResize');
+
+                    // Hiding
+                    this.hide();
+                });
+            });
         }
     };
 
