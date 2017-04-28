@@ -335,22 +335,18 @@ A web component used to exchange data with a Primus server.
             // OBSERVER
             _urlChanged() {
 
-                // Squashing
-                this.debounce('initializing', () => {
+                // Checking
+                if (this.socket) { this.socket.destroy(); }
 
-                    // Checking
-                    if (this.socket) { this.socket.destroy(); }
+                // Ensuring
+                this.ensure('socket', new XPPrimus(XP.pick(this, ['global', 'hostname', 'pathname', 'port', 'protocol', 'query', 'url'])));
 
-                    // Ensuring
-                    this.ensure('socket', new XPPrimus(XP.pick(this, ['global', 'hostname', 'pathname', 'port', 'protocol', 'query', 'url'])));
-
-                    // Listening
-                    this.on('error', this._handleError.bind(this));
-                    this.on('offline', this._handleLine.bind(this));
-                    this.on('online', this._handleLine.bind(this));
-                    this.on('ready', this._handleReady.bind(this));
-                    this.on('state', this._handleState.bind(this));
-                });
+                // Listening
+                this.on('error', this._handleError.bind(this));
+                this.on('offline', this._handleLine.bind(this));
+                this.on('online', this._handleLine.bind(this));
+                this.on('ready', this._handleReady.bind(this));
+                this.on('state', this._handleState.bind(this));
             },
 
             /*********************************************************************/

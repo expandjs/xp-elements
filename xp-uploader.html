@@ -150,10 +150,10 @@ A web component used to perform files uploading.
                 if (!XP.isDefined(value)) { return this.headers[name]; }
 
                 // Setting
-                if (value) { return this.headers[name] = value; }
+                if (value) { return this.ensure('headers', Object.assign({}, headers, {[name]: value})); }
 
                 // Deleting
-                delete this.headers[name];
+                this.ensure('headers', XP.omit(this.headers, name));
             },
 
             /**
@@ -165,6 +165,7 @@ A web component used to perform files uploading.
 
                 // Resetting
                 this.ensure('uploader', null);
+                this.ensure('response', null);
             },
 
             /**
@@ -410,15 +411,18 @@ A web component used to perform files uploading.
                 },
 
                 /**
-                 * The uploader's instance.
+                 * The uploader's response.
                  *
-                 * @attribute uploader
+                 * @attribute response
                  * @type Object
                  * @readonly
+                 * @notifies
                  */
-                uploader: {
-                    observer: '_uploaderChanged',
-                    readOnly: true
+                response: {
+                    notify: true,
+                    readOnly: true,
+                    type: Object,
+                    value: null
                 },
 
                 /**
@@ -465,6 +469,32 @@ A web component used to perform files uploading.
                     notify: true,
                     readOnly: true,
                     type: String
+                },
+
+                /**
+                 * The response time.
+                 *
+                 * @attribute time
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                time: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number
+                },
+
+                /**
+                 * The uploader's instance.
+                 *
+                 * @attribute uploader
+                 * @type Object
+                 * @readonly
+                 */
+                uploader: {
+                    observer: '_uploaderChanged',
+                    readOnly: true
                 },
 
                 /**
@@ -555,6 +585,7 @@ A web component used to perform files uploading.
                 this.ensure('error', (this.uploader && this.uploader.error) || null);
                 this.ensure('statusCode', (this.uploader && this.uploader.statusCode) || null);
                 this.ensure('statusMessage', (this.uploader && this.uploader.statusMessage) || null);
+                this.ensure('time', null);
             },
 
             // OBSERVER
@@ -574,6 +605,7 @@ A web component used to perform files uploading.
 
                 // Ensuring
                 this.ensure('data', data);
+                this.ensure('time', uploader.time);
 
                 // Firing
                 this.fire('xp-uploader-data', {data: data});
@@ -602,19 +634,21 @@ A web component used to perform files uploading.
                 // Ensuring
                 this.ensure('uploader', uploader);
                 this.ensure('error', error);
+                this.ensure('time', uploader.time);
 
                 // Firing
                 this.fire('xp-uploader-error', {error: error});
             },
 
             // HANDLER
-            _handleResponse(uploader) {
+            _handleResponse(uploader, response) {
 
                 // Checking
                 if (this.uploader && uploader.tsSubmit < this.uploader.tsSubmit) { return; }
 
                 // Ensuring
                 this.ensure('uploader', uploader);
+                this.ensure('response', response);
                 this.ensure('downTotal', uploader.downTotal);
                 this.ensure('downRatio', uploader.downRatio);
 

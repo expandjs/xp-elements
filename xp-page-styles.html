@@ -38,6 +38,10 @@ A stylesheet used to stylize a page element.
                 box-sizing: border-box;
                 display: block;
                 height: 100%;
+                overflow: visible;
+            }
+
+            :host([scrollable]) .wrapper {
                 overflow-x: hidden;
                 overflow-y: auto;
             }

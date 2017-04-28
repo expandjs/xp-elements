@@ -302,7 +302,6 @@ A behavior used to add selection capabilities on a web component.
 
         // OBSERVERS
         observers: [
-            '__foundChanged(found)',
             '__selectedIndexChanged(selectedIndex.*)',
             '__selectedItemChanged(selectedItem.*)'
         ],
@@ -461,13 +460,6 @@ A behavior used to add selection capabilities on a web component.
         /*********************************************************************/
 
         // OBSERVER
-        __foundChanged() {
-
-            // Selecting
-            if (this.found) { this.selectDefault(); }
-        },
-
-        // OBSERVER
         __itemsChanged() {
 
             // Debouncing
@@ -496,6 +488,11 @@ A behavior used to add selection capabilities on a web component.
                     this.overwrite('selectedItem', this.items ? this.items.filter(item => this.isSelected(item, true)) : []);
                     this.overwrite('selectedIndex', this.selectedItem ? this.selectedItem.map(item => this.findIndex(item, true)) : []);
                     this.ensure('selecting', false);
+                }
+
+                // Selecting
+                if (this.autoSelect && this.found && !this.selectedItem) {
+                    this.selectDefault();
                 }
             });
         },
@@ -531,15 +528,6 @@ A behavior used to add selection capabilities on a web component.
 
             // Refreshing
             this.refreshSelection();
-        },
-
-        /*********************************************************************/
-
-        // LISTENER
-        created() {
-
-            // Binding
-            this.selectDefault = XP.once(this.selectDefault.bind(this));
         },
 
         /*********************************************************************/

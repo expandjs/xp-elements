@@ -141,10 +141,10 @@ A web component used to perform XHR requests.
                 if (!XP.isDefined(value)) { return this.headers[name]; }
 
                 // Setting
-                if (value) { return this.headers[name] = value; }
+                if (value) { return this.ensure('headers', Object.assign({}, headers, {[name]: value})); }
 
                 // Deleting
-                delete this.headers[name];
+                this.ensure('headers', XP.omit(this.headers, name));
             },
 
             /**
@@ -156,6 +156,7 @@ A web component used to perform XHR requests.
 
                 // Resetting
                 this.ensure('request', null);
+                this.ensure('response', null);
             },
 
             /**
@@ -442,6 +443,21 @@ A web component used to perform XHR requests.
                 },
 
                 /**
+                 * The request's response.
+                 *
+                 * @attribute response
+                 * @type Object
+                 * @readonly
+                 * @notifies
+                 */
+                response: {
+                    notify: true,
+                    readOnly: true,
+                    type: Object,
+                    value: null
+                },
+
+                /**
                  * The request's state.
                  *
                  * @attribute state
@@ -488,6 +504,20 @@ A web component used to perform XHR requests.
                 },
 
                 /**
+                 * The response time.
+                 *
+                 * @attribute time
+                 * @type number
+                 * @notifies
+                 * @readonly
+                 */
+                time: {
+                    notify: true,
+                    readOnly: true,
+                    type: Number
+                },
+
+                /**
                  * The request's url.
                  *
                  * @attribute url
@@ -519,6 +549,7 @@ A web component used to perform XHR requests.
                 this.ensure('error', (this.request && this.request.error) || null);
                 this.ensure('statusCode', (this.request && this.request.statusCode) || null);
                 this.ensure('statusMessage', (this.request && this.request.statusMessage) || null);
+                this.ensure('time', null);
             },
 
             // OBSERVER
@@ -548,6 +579,7 @@ A web component used to perform XHR requests.
 
                 // Ensuring
                 this.ensure('data', data);
+                this.ensure('time', request.time);
 
                 // Firing
                 this.fire('xp-request-data', {data: data});
@@ -576,19 +608,21 @@ A web component used to perform XHR requests.
                 // Ensuring
                 this.ensure('request', request);
                 this.ensure('error', error);
+                this.ensure('time', request.time);
 
                 // Firing
                 this.fire('xp-request-error', {error: error});
             },
 
             // HANDLER
-            _handleResponse(request) {
+            _handleResponse(request, response) {
 
                 // Checking
                 if (this.request && request.tsSubmit < this.request.tsSubmit) { return; }
 
                 // Ensuring
                 this.ensure('request', request);
+                this.ensure('response', response);
                 this.ensure('downTotal', request.downTotal);
                 this.ensure('downRatio', request.downRatio);
 
