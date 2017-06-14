@@ -1,7 +1,7 @@
 {
   "name": "xp-elements",
   "description": "A collection of core web components from the expand.js team",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "license": "BSD-3-Clause",
   "main": "xp-elements.html",
   "homepage": "https://expandjs.com/components",

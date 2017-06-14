@@ -96,6 +96,24 @@ A behavior used to add spin capabilities on a web component.
             },
 
             /**
+             * If set to true, the spinner is hiding.
+             *
+             * @attribute hiding
+             * @type boolean
+             * @default false
+             * @notifies
+             * @readonly
+             */
+            hiding: {
+                notify: true,
+                observer: '__hidingChanged',
+                readonly: true,
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
+
+            /**
              * If set to true, the spinner is visible.
              *
              * @attribute showed
@@ -115,7 +133,17 @@ A behavior used to add spin capabilities on a web component.
         /*********************************************************************/
 
         // OBSERVER
-        __showedChanged() {
+        __hidingChanged(post) {
+
+            // Ensuring
+            if (post) { this.wait(() => this.ensure('hiding', false), 400); }
+        },
+
+        // OBSERVER
+        __showedChanged(post, pre) {
+            
+            // Ensuring
+            if (this.isAttached && pre && !post) { this.ensure('hiding', true); }
 
             // Firing
             if (this.isAttached) { this.fire(this.showed ? 'xp-show' : 'xp-hide'); }

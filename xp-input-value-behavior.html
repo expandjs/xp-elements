@@ -204,8 +204,11 @@ A behavior used to add text input capabilities on a web component.
             // Casting
             this.value = this._toValue(this.bindValue);
 
+            // Let
+            let memoized = XP.isDefined(this.get('memento.bindValue'));
+
             // Firing
-            this.fire('xp-input-change', {id: this.id, name: this.name, value: this.bindValue});
+            if (memoized) { this.async(() => this.fire('xp-input-change', {id: this.id, name: this.name, value: this.bindValue})); }
         },
 
         // OBSERVER

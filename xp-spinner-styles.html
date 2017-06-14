@@ -41,7 +41,7 @@ A stylesheet used to stylize a spinner element.
                 transform: translate(-50%, -50%);
             }
 
-            :host(:not([showed])) {
+            :host(:not([showed]):not([hiding])) {
                 visibility: hidden !important
             }
 
@@ -55,9 +55,15 @@ A stylesheet used to stylize a spinner element.
                 top: 0;
             }
 
-            :host([showed]) .wrapper {
+            :host([showed]) .wrapper,
+            :host([hiding]) .wrapper {
                 -webkit-animation: spinner-wrapper-rotate 1568ms linear infinite;
                 animation: spinner-wrapper-rotate 1568ms linear infinite;
+            }
+
+            :host([hiding]) .wrapper {
+                -webkit-animation: spinner-wrapper-rotate 1568ms linear infinite, fade-out 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
+                animation: spinner-wrapper-rotate 1568ms linear infinite, fade-out 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
             }
 
             :host .layer {
@@ -72,6 +78,16 @@ A stylesheet used to stylize a spinner element.
 
             @keyframes spinner-wrapper-rotate {
                 to { transform: rotate(360deg); }
+            }
+
+            @-webkit-keyframes fade-out {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+
+            @keyframes fade-out {
+                from { opacity: 1; }
+                to { opacity: 0 }
             }
 
         </style>
