@@ -141,7 +141,7 @@ A behavior used to add spin capabilities on a web component.
 
         // OBSERVER
         __showedChanged(post, pre) {
-            
+
             // Ensuring
             if (this.isAttached && pre && !post) { this.ensure('hiding', true); }
 
@@ -150,6 +150,9 @@ A behavior used to add spin capabilities on a web component.
         }
     };
 
+    /**
+     * @polymerBehavior Polymer.XPSpinnerBehavior
+     */
     Polymer.XPSpinnerBehavior = [
         Polymer.XPBaseBehavior,
         Polymer.XPSpinnerBehaviorImp
