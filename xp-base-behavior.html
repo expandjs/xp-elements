@@ -57,6 +57,20 @@ A behavior used to improve Polymer Base API.
         },
 
         /**
+         * Returns the provided `value`. Useful to setup a direct computation.
+         *
+         * @method computeFrom
+         * @param {*} value
+         * @returns {*} value
+         * @private
+         */
+        computeFrom(value) {
+
+            // Returning
+            return value;
+        },
+
+        /**
          * Set `value` at the specified `path`, creating it if not exists.
          *
          * @method ensure
@@ -164,6 +178,46 @@ A behavior used to improve Polymer Base API.
 
             // Finding
             return array.indexOf(value);
+        },
+
+        /**
+         * Returns `true` if the provided `value` is empty.
+         *
+         * @method isEmpty
+         * @param {*} value
+         * @returns {boolean}
+         */
+        isEmpty(value) {
+
+            // Returning
+            return XP.isEmpty(value);
+        },
+
+        /**
+         * Returns `true` if the provided values are equal.
+         *
+         * @method isEqual
+         * @param {*} value1
+         * @param {*} value2
+         * @returns {boolean}
+         */
+        isEqual(value1, value2) {
+
+            // Returning
+            return XP.isEqual(value1, value2);
+        },
+
+        /**
+         * Returns `true` if the provided `value` is truthy.
+         *
+         * @method isTruthy
+         * @param {*} value
+         * @returns {boolean}
+         */
+        isTruthy(value) {
+
+            // Returning
+            return !!value;
         },
 
         /**
@@ -443,57 +497,6 @@ A behavior used to improve Polymer Base API.
 
             // Calling
             func(this);
-        },
-
-        /*********************************************************************/
-
-        /**
-         * Returns the provided `value`. Useful to setup a direct computation.
-         *
-         * @method _computeFrom
-         * @param {*} value
-         * @returns {*} value
-         * @private
-         */
-        _computeFrom(value) {
-            return value;
-        },
-
-        /**
-         * Returns `true` if the provided `value` is empty.
-         *
-         * @method _isEmpty
-         * @param {*} value
-         * @returns {boolean}
-         * @private
-         */
-        _isEmpty(value) {
-            return XP.isEmpty(value);
-        },
-
-        /**
-         * Returns `true` if the provided values are equal.
-         *
-         * @method _isEqual
-         * @param {*} value1
-         * @param {*} value2
-         * @returns {boolean}
-         * @private
-         */
-        _isEqual(value1, value2) {
-            return XP.isEqual(value1, value2);
-        },
-
-        /**
-         * Returns `true` if the provided `value` is truthy.
-         *
-         * @method _isTruthy
-         * @param {*} value
-         * @returns {boolean}
-         * @private
-         */
-        _isTruthy(value) {
-            return !!value;
         },
 
         /*********************************************************************/
