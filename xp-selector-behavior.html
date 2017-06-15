@@ -494,10 +494,11 @@ A behavior used to add selection capabilities on a web component.
                     this.ensure('selecting', false);
                 }
 
+                // Refreshing
+                if (this.selectedItem === item) { this.refreshSelection(); }
+                
                 // Selecting
-                if (this.autoSelect && this.found && !this.selectedItem) {
-                    this.selectDefault();
-                }
+                if (this.autoSelect && this.found && !this.selectedItem) { this.selectDefault(); }
             });
         },
 

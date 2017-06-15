@@ -88,12 +88,12 @@ A behavior used to add text input capabilities on a web component.
             if (!XP.isDate(date)) { return ''; }
 
             // Let
-            let year    = String(date.getUTCFullYear()),
-                month   = String(date.getUTCMonth() + 1),
-                day     = String(date.getUTCDate()),
-                hours   = local ? String(date.getUTCHours()) : '',
-                minutes = local ? String(date.getUTCMinutes()) : '',
-                seconds = local ? String(date.getUTCSeconds()) : '';
+            let year    = String(date.getFullYear()),
+                month   = String(date.getMonth() + 1),
+                day     = String(date.getDate()),
+                hours   = local ? String(date.getHours()) : '',
+                minutes = local ? String(date.getMinutes()) : '',
+                seconds = local ? String(date.getSeconds()) : '';
 
             // Overriding
             month   = `${month[1] ? `` : `0`}${month}`;
