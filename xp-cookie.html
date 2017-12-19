@@ -99,7 +99,7 @@ A web component used to manipulate cookies.
                 if (this.name) { Cookies.set(this.name, value, {domain: XP.toUseful(this.domain), expires: XP.toUseful(this.expires), path: this.path, secure: this.secure}); }
 
                 // Refreshing
-                if (this.name) { this.wait(() => this.instances.forEach(instance => instance._nameChanged()); }
+                if (this.name) { this.wait(() => this.instances.forEach(instance => instance._nameChanged())); }
             },
 
             /*********************************************************************/
