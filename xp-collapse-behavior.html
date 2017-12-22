@@ -33,6 +33,11 @@ A behavior used to add collapse capabilities on a web component.
      */
     Polymer.XPCollapseBehaviorImp = {
 
+        // CLASSES
+        classes: ['collapse'],
+
+        /*********************************************************************/
+
         /**
          * Fired when the collapsed state changes.
          *
@@ -49,6 +54,8 @@ A behavior used to add collapse capabilities on a web component.
          * @method collapse
          */
         collapse() {
+
+            // Setting
             if (this.collapsible) { this.collapsed = true; }
         },
 
@@ -58,6 +65,8 @@ A behavior used to add collapse capabilities on a web component.
          * @method expand
          */
         expand() {
+
+            // Setting
             if (this.collapsible) { this.collapsed = false; }
         },
 
@@ -67,6 +76,8 @@ A behavior used to add collapse capabilities on a web component.
          * @method toggle
          */
         toggle() {
+
+            // Setting
             if (this.collapsible) { this.collapsed = !this.collapsed; }
         },
 
@@ -237,7 +248,7 @@ A behavior used to add collapse capabilities on a web component.
 
                 // Debouncing
                 this.debounce('collapsing', this.ensure.bind(this, 'collapsing', false), duration);
-            }
+            };
 
             // Firing
             this.fire('xp-collapse', {isCollapsed: collapsed});

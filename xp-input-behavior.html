@@ -65,7 +65,6 @@ A behavior used to add input capabilities on a web component.
          *
          * @method _commitFrom
          * @abstract
-         * @private
          */
         _commitFrom() {},
 
@@ -75,63 +74,57 @@ A behavior used to add input capabilities on a web component.
          * @method _commitIndex
          * @param {number} index
          * @abstract
-         * @private
          */
-        _commitIndex() {},
+        _commitIndex(index) {},
 
         /**
          * Must be redefined to reflect the element's `value` onto the native input.
          *
          * @method _commitTo
          * @abstract
-         * @private
          */
         _commitTo() {},
 
         /**
-         * Must be redefined to inject the native input.
+         * Must be redefined to `inject` the native input.
          *
          * @method _inject
          * @abstract
-         * @private
          */
         _inject() {},
 
         /**
-         * Must be redefined to sanitize the native input's `value`.
+         * Must be redefined to `sanitize` the native input's `value`.
          *
          * @method _sanitize
          * @param {boolean} [native]
          * @abstract
-         * @private
          */
-        _sanitize() {},
+        _sanitize(native) {},
 
         /**
-         * Must be redefined to update the native input's attributes.
+         * Must be redefined to `update` the native input's attributes.
          *
          * @method _update
          * @abstract
-         * @private
          */
         _update() {},
 
         /**
-         * Must be redefined to validate the native input's `value`.
+         * Must be redefined to `validate` the native input's `value`.
          *
          * @method _validate
          * @param {string} [invalidMessage]
          * @abstract
-         * @private
          */
-        _validate() {},
+        _validate(invalidMessage) {},
 
         /*********************************************************************/
 
         /**
          * Blurs the input.
          *
-         * @method focus
+         * @method blur
          */
         blur() {
 
@@ -212,6 +205,7 @@ A behavior used to add input capabilities on a web component.
             // Sanitizing
             if (this.input) { this._sanitize(native); }
 
+            // Returning
             return this.value;
         },
 
@@ -359,19 +353,6 @@ A behavior used to add input capabilities on a web component.
             },
 
             /**
-             * The input's memento.
-             *
-             * @attribute memento
-             * @type Object
-             * @readonly
-             */
-            memento: {
-                readOnly: true,
-                type: Object,
-                value() { return {}; }
-            },
-
-            /**
              * If set to true, the input is inline.
              *
              * @attribute inline
@@ -439,6 +420,19 @@ A behavior used to add input capabilities on a web component.
                 reflectToAttribute: true,
                 type: String,
                 value: null
+            },
+
+            /**
+             * The input's memento.
+             *
+             * @attribute memento
+             * @type Object
+             * @readonly
+             */
+            memento: {
+                readOnly: true,
+                type: Object,
+                value() { return {}; }
             },
 
             /**
@@ -587,7 +581,7 @@ A behavior used to add input capabilities on a web component.
             // Ensuring
             this.ensure('form', null);
 
-            // Unlistening
+            // Removing listeners
             if (this.scrollIntoViewIfNeeded) { this.unlisten(window, 'resize', '__handleResize'); }
         },
 
@@ -613,14 +607,21 @@ A behavior used to add input capabilities on a web component.
         // LISTENER
         ready() {
 
-            // Memoizing
-            this.async(() => this.memoize());
+            // Waiting
+            this.async(() => {
 
-            // Injecting
-            this.async(() => this._inject());
+                // Preventing
+                if (this.input) { return; }
 
-            // Committing
-            this.async(() => this._commitTo());
+                // Memoizing
+                this.memoize();
+
+                // Injecting
+                this._inject();
+
+                // Committing
+                this._commitTo();
+            });
         },
 
         /*********************************************************************/

@@ -197,6 +197,8 @@ A web component used to manipulate cookies.
                 }
             },
 
+            /*********************************************************************/
+
             /**
              * The list of instances.
              *
@@ -220,7 +222,7 @@ A web component used to manipulate cookies.
             _nameChanged() {
 
                 // Ensuring
-                this.ensure('loaded', !!this.name);
+                this.ensure('loaded', Boolean(this.name));
                 this.ensure('value', (this.name && Cookies.get(this.name)) || '');
             },
 

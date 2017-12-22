@@ -54,8 +54,8 @@ A stylesheet used to stylize an input element.
 
             /* SLOTTED */
 
-            :host .holder ::slotted(input),
-            :host .holder ::slotted(textarea) {
+            :host .holder * ::slotted(input),
+            :host .holder * ::slotted(textarea) {
                 background: transparent;
                 border: none;
                 box-shadow: none;
@@ -76,7 +76,11 @@ A stylesheet used to stylize an input element.
                 width: 100%;
             }
 
-            :host .holder ::slotted(textarea) {
+            :host .holder * ::slotted(input::-ms-reveal) {
+                display: none;
+            }
+
+            :host .holder * ::slotted(textarea) {
                 white-space: pre-line;
                 word-wrap: break-word;
             }

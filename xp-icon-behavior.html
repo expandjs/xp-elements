@@ -120,7 +120,7 @@ A behavior used to add icon capabilities on a web component.
              * @readonly
              */
             raster: {
-                computed: '_computeRaster(src)',
+                computed: 'isTruthy(src)',
                 notify: true,
                 readOnly: true,
                 reflectToAttribute: true,
@@ -139,13 +139,6 @@ A behavior used to add icon capabilities on a web component.
                 reflectToAttribute: true,
                 type: String
             }
-        },
-
-        /*********************************************************************/
-
-        // COMPUTER
-        _computeRaster(src) {
-            return !!src;
         },
 
         /*********************************************************************/

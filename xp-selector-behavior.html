@@ -68,7 +68,7 @@ A behavior used to add selection capabilities on a web component.
             let item = this.findItem(identity, safe);
 
             // Checking
-            return !!this.items && this.items.includes(item) && !item.disabled && !this.isSelected(item, true);
+            return Boolean(this.items && this.items.includes(item) && !item.disabled && !this.isSelected(item, true));
         },
 
         /**
@@ -89,7 +89,7 @@ A behavior used to add selection capabilities on a web component.
             if (XP.isVoid(index) || !this.selectedItem) { return false; }
 
             // Checking
-            return this.multi ? !!this.selectedIndex && this.selectedIndex.includes(index) : this.selectedIndex === index;
+            return Boolean(this.multi ? this.selectedIndex && this.selectedIndex.includes(index) : this.selectedIndex === index);
         },
 
         /**
@@ -107,7 +107,7 @@ A behavior used to add selection capabilities on a web component.
             let item = this.findItem(identity, safe);
 
             // Checking
-            return !!this.items && this.items.includes(item) && this.isSelected(item) && (!!force || this.multi || this.toggleable);
+            return Boolean(this.items && this.items.includes(item) && this.isSelected(item) && (force || this.multi || this.toggleable));
         },
 
         /**
@@ -390,7 +390,8 @@ A behavior used to add selection capabilities on a web component.
              */
             selectedData: {
                 notify: true,
-                readOnly: true
+                readOnly: true,
+                value: null
             },
 
             /**
@@ -458,7 +459,7 @@ A behavior used to add selection capabilities on a web component.
 
         // COMPUTER
         _computeSelected() {
-            return !!this.selectedItem && !XP.isArray(this.selectedItem, false);
+            return Boolean(this.selectedItem && !XP.isArray(this.selectedItem, false));
         },
 
         /*********************************************************************/
@@ -496,7 +497,7 @@ A behavior used to add selection capabilities on a web component.
 
                 // Refreshing
                 if (this.selectedItem === item) { this.refreshSelection(); }
-                
+
                 // Selecting
                 if (this.autoSelect && this.found && !this.selectedItem) { this.selectDefault(); }
             });

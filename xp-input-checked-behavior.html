@@ -92,7 +92,7 @@ A behavior used to add check input capabilities on a web component.
          * @private
          */
         _toValue(bindValue) {
-            return XP.isPrimitive(bindValue) ? !!bindValue : false;
+            return XP.isPrimitive(bindValue) ? Boolean(bindValue) : false;
         },
 
         /*********************************************************************/

@@ -192,6 +192,8 @@ A behavior used to add overlaying capabilities on a web component.
             }
         },
 
+        /*********************************************************************/
+
         /**
          * The list of possible positions.
          *
@@ -254,7 +256,8 @@ A behavior used to add overlaying capabilities on a web component.
                 if (event.overlays && event.overlays.includes(this)) { return; }
 
                 // Setting
-                if ((!event.keyCode && !event.button) || (event.keyCode === 27 && !event.defaultPrevented)) { event.hiding = this; }
+                if (event.type === 'click' && !event.button) { event.hiding = this; }
+                if (event.keyCode === 27 && !event.defaultPrevented) { event.hiding = this; }
 
                 // Frame 2
                 requestAnimationFrame(() => {
@@ -262,7 +265,7 @@ A behavior used to add overlaying capabilities on a web component.
                     // Checking
                     if (event.hiding !== this) { return; }
 
-                    // Unlistening
+                    // Removing listeners
                     this.unlisten(this, 'click', '__handlePush');
                     this.unlisten(window, 'click', '__handleHide');
                     this.unlisten(window, 'keyup', '__handleHide');

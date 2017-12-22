@@ -26,6 +26,8 @@ A web component used to load google analytics.
 <link rel="import" href="../expandjs/expandjs.html">
 <link rel="import" href="xp-base-behavior.html">
 
+<script>!function(i,s,o,g,r,a,m){i.GoogleAnalyticsObject=r,i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=Date.now(),a=s.createElement(o),m=s.getElementsByTagName(o)[0],a.async=1,a.src="https://www.google-analytics.com/analytics.js",m.parentNode.insertBefore(a,m)}(window,document,"script",0,"ga");</script>
+
 <dom-module id="xp-analytics">
 
     <template strip-whitespace>
@@ -39,92 +41,80 @@ A web component used to load google analytics.
     </template>
 
     <script>
-        (function(i, s, o, g, r, a, m) {
+        Polymer({
 
-            // Initialize
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function() { (i[r].q = i[r].q || []).push(arguments); };
-            i[r].l = 1 * new Date();
-            a = s.createElement(o);
-            m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m);
+            // ELEMENT
+            is: 'xp-analytics',
 
-            // Component
-            Polymer({
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPBaseBehavior
+            ],
 
-                // ELEMENT
-                is: 'xp-analytics',
+            // CLASSES
+            classes: ['analytics'],
 
-                // BEHAVIORS
-                behaviors: [
-                    Polymer.XPBaseBehavior
-                ],
+            /*********************************************************************/
 
-                /*********************************************************************/
+            /**
+             * Sends a page view hit.
+             *
+             * @method pageView
+             * @param {string} [path]
+             * @param {string} [title]
+             */
+            pageView(path, title) {
+
+                // Asserting
+                XP.assertArgument(XP.isVoid(path) || XP.isString(path, true), 1, 'string');
+                XP.assertArgument(XP.isVoid(title) || XP.isString(title, true), 2, 'string');
+
+                // Sending hit
+                ga('send', {hitType: 'pageview', page: path, title: title || document.title});
+            },
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
 
                 /**
-                 * Sends a page view hit.
+                 * If set to true, a page view is automatically send on create.
                  *
-                 * @method pageView
-                 * @param {string} [path]
-                 * @param {string} [title]
+                 * @attribute auto-send
+                 * @type boolean
+                 * @default false
                  */
-                pageView(path, title) {
-
-                    // Asserting
-                    XP.assertArgument(XP.isVoid(path) || XP.isString(path, true), 1, 'string');
-                    XP.assertArgument(XP.isVoid(title) || XP.isString(title, true), 2, 'string');
-
-                    // Sending hit
-                    ga('send', {hitType: 'pageview', page: path, title: title || document.title});
+                autoSend: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
                 },
 
-                /*********************************************************************/
-
-                // PROPERTIES
-                properties: {
-
-                    /**
-                     * If set to true, a page view is automatically send on create.
-                     *
-                     * @attribute auto-send
-                     * @type boolean
-                     * @default false
-                     */
-                    autoSend: {
-                        reflectToAttribute: true,
-                        type: Boolean,
-                        value: false
-                    },
-
-                    /**
-                     * The Google Analytics tracker id.
-                     *
-                     * @attribute tracker
-                     * @type string
-                     */
-                    tracker: {
-                        observer: '_trackerChanged',
-                        type: String
-                    }
-                },
-
-                /*********************************************************************/
-
-                // OBSERVER0
-                _trackerChanged(post) {
-
-                    // Creating
-                    if (post) { ga('create', post); }
-
-                    // Sending view
-                    if (this.autoSend) { this.pageView(); }
+                /**
+                 * The Google Analytics tracker id.
+                 *
+                 * @attribute tracker
+                 * @type string
+                 */
+                tracker: {
+                    observer: '_trackerChanged',
+                    type: String
                 }
-            });
+            },
 
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+            /*********************************************************************/
+
+            // OBSERVER0
+            _trackerChanged(post) {
+
+                // Creating
+                if (post) { ga('create', post); }
+
+                // Sending view
+                if (this.autoSend) { this.pageView(); }
+            }
+        });
     </script>
 
 </dom-module>

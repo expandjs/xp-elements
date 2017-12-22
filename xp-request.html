@@ -128,23 +128,23 @@ A web component used to perform XHR requests.
              *
              * @method header
              * @param {string} name
-             * @param {number | string} [value]
-             * @returns {number | string}
+             * @param {string} [value]
+             * @returns {string}
              */
             header(name, value) {
 
                 // Asserting
                 XP.assertArgument(XP.isString(name, true), 1, 'string');
-                XP.assertArgument(XP.isVoid(value) || XP.isFalse(value) || XP.isInput(value, true), 2, 'string');
+                XP.assertArgument(XP.isVoid(value) || XP.isFalse(value) || XP.isInput(value), 2, 'string');
 
                 // Getting
                 if (!XP.isDefined(value)) { return this.headers[name]; }
 
-                // Setting
-                if (value) { return this.ensure('headers', Object.assign({}, headers, {[name]: value})); }
+                // Removing
+                if (!XP.isInput(value, true)) { this.ensure('headers', XP.omit(this.headers, name)); return; }
 
-                // Deleting
-                this.ensure('headers', XP.omit(this.headers, name));
+                // Setting
+                this.ensure('headers', Object.assign({}, headers, {[name]: value.toString()}));
             },
 
             /**
@@ -252,7 +252,7 @@ A web component used to perform XHR requests.
                 /**
                  * The downloaded bytes.
                  *
-                 * @attribute downLoaded
+                 * @attribute down-loaded
                  * @type number
                  * @default 0
                  * @notifies
@@ -268,7 +268,7 @@ A web component used to perform XHR requests.
                 /**
                  * The download ratio.
                  *
-                 * @attribute downRatio
+                 * @attribute down-ratio
                  * @type number
                  * @notifies
                  * @readonly
@@ -283,7 +283,7 @@ A web component used to perform XHR requests.
                 /**
                  * The download total.
                  *
-                 * @attribute downTotal
+                 * @attribute down-total
                  * @type number
                  * @notifies
                  * @readonly

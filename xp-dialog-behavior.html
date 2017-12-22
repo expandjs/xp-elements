@@ -176,7 +176,7 @@ A behavior used to add dialog capabilities on a web component.
                     // Checking
                     if (event.hiding !== this) { return; }
 
-                    // Unlistening
+                    // Removing listeners
                     this.unlisten(this, 'click', '__handlePush');
                     this.unlisten(window, 'click', '__handleHide');
                     this.unlisten(window, 'keyup', '__handleHide');

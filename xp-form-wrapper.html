@@ -34,9 +34,22 @@ A behavior used to add form wrapping capabilities on a web component.
     Polymer.XPFormWrapperImp = {
 
         /**
+         * Finds a form's input matching `selector`.
+         *
+         * @method findInput
+         * @param {string} selector
+         * @returns {Element}
+         */
+        findInput() {
+            return XP.apply(this.form, 'findInput', arguments);
+        },
+
+        /**
          * Parses the form's inputs.
          *
          * @method parse
+         * @param {Object} [options]
+         *   @param {boolean} [options.disabled = false]
          * @param {Function} [callback]
          * @returns {Object}
          */
@@ -54,7 +67,7 @@ A behavior used to add form wrapping capabilities on a web component.
         },
 
         /**
-         * Submits the form's data through XHR.
+         * Submits the form's data.
          *
          * @method submit
          */

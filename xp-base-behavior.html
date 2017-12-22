@@ -57,19 +57,6 @@ A behavior used to improve Polymer Base API.
         },
 
         /**
-         * Returns the provided `value`. Useful to setup a direct computation.
-         *
-         * @method computeFrom
-         * @param {*} value
-         * @returns {*} value
-         */
-        computeFrom(value) {
-
-            // Returning
-            return value;
-        },
-
-        /**
          * Set `value` at the specified `path`, creating it if not exists.
          *
          * @method ensure
@@ -84,18 +71,19 @@ A behavior used to improve Polymer Base API.
             XP.assertArgument(XP.isVoid(target) || XP.isElement(target), 3, 'Element');
 
             // Let
-            let element = target || this,
-                current = XP.get(element, path),
-                setter  = `_set${XP.capitalize(path)}`;
+            let element  = target || this,
+                polished = path.replace(/#/g, ''),
+                current  = XP.get(element, polished),
+                setter   = `_set${XP.capitalize(polished)}`;
 
             // Preventing
             if (value === current || (value !== value && current !== current)) { return; }
 
             // Setting
-            if (!element[setter]) { XP.set(element, path, value); } else { return element[setter](value); }
+            if (!element[setter]) { XP.set(element, polished, value); } else { return element[setter](value); }
 
             // Notifying
-            if (element.notifyPath) { element.notifyPath(path, value); }
+            if (element.notifyPath) { element.notifyPath(polished, value); }
         },
 
         /**
@@ -126,8 +114,8 @@ A behavior used to improve Polymer Base API.
 
             // Defaults
             options.node       = options.node || this;
-            options.bubbles    = XP.isDefined(options.bubbles) ? !!options.bubbles : true;
-            options.cancelable = XP.isDefined(options.cancelable) ? !!options.cancelable : false;
+            options.bubbles    = XP.isDefined(options.bubbles) ? Boolean(options.bubbles) : true;
+            options.cancelable = XP.isDefined(options.cancelable) ? Boolean(options.cancelable) : false;
 
             // Let
             let event = Object.assign(new Event(type, options), {detail: detail});
@@ -177,46 +165,6 @@ A behavior used to improve Polymer Base API.
 
             // Finding
             return array.indexOf(value);
-        },
-
-        /**
-         * Returns `true` if the provided `value` is empty.
-         *
-         * @method isEmpty
-         * @param {*} value
-         * @returns {boolean}
-         */
-        isEmpty(value) {
-
-            // Returning
-            return XP.isEmpty(value);
-        },
-
-        /**
-         * Returns `true` if the provided values are equal.
-         *
-         * @method isEqual
-         * @param {*} value1
-         * @param {*} value2
-         * @returns {boolean}
-         */
-        isEqual(value1, value2) {
-
-            // Returning
-            return XP.isEqual(value1, value2);
-        },
-
-        /**
-         * Returns `true` if the provided `value` is truthy.
-         *
-         * @method isTruthy
-         * @param {*} value
-         * @returns {boolean}
-         */
-        isTruthy(value) {
-
-            // Returning
-            return !!value;
         },
 
         /**
@@ -432,7 +380,7 @@ A behavior used to improve Polymer Base API.
             // Splicing
             if (link) { this._boundProperties.splice(index, 1); } else { return; }
 
-            // Unlistening
+            // Removing listeners
             this.removeEventListener(`${XP.kebabCase(to)}-changed`, link.handleTo);
             element.removeEventListener(`${XP.kebabCase(from)}-changed`, link.handleFrom);
         },
@@ -496,6 +444,99 @@ A behavior used to improve Polymer Base API.
 
             // Calling
             func(this);
+        },
+
+        /*********************************************************************/
+
+        /**
+         * Returns the provided `value`.
+         *
+         * @method computeFrom
+         * @param {*} value
+         * @returns {*}
+         */
+        computeFrom(value) {
+            return value;
+        },
+
+        /**
+         * Returns an uuid.
+         *
+         * @method computeUUID
+         * @returns {string}
+         */
+        computeUUID() {
+            return XP.uuid();
+        },
+
+        /**
+         * Returns the value of `key` from `object`.
+         *
+         * @method computeValue
+         * @param {Object} object
+         * @param {string} key
+         * @returns {*}
+         */
+        computeValue(object, key) {
+            return object ? XP.toDefined(object[key]) : null;
+        },
+
+        /**
+         * Returns `true` if the provided `value` is empty.
+         *
+         * @method isEmpty
+         * @param {*} value
+         * @returns {boolean}
+         */
+        isEmpty(value) {
+            return XP.isEmpty(value);
+        },
+
+        /**
+         * Returns `true` if the provided values are equal.
+         *
+         * @method isEqual
+         * @param {*} value1
+         * @param {*} value2
+         * @returns {boolean}
+         */
+        isEqual(value1, value2) {
+            return XP.isEqual(value1, value2);
+        },
+
+        /**
+         * Returns `true` if `value` is included in `values`.
+         *
+         * @method isIncluded
+         * @param {*} value
+         * @param {Array} values
+         * @returns {boolean}
+         */
+        isIncluded(value, values) {
+            return Array.from(values || []).includes(value);
+        },
+
+        /**
+         * Returns `true` if the provided values are not equivalent.
+         *
+         * @method isModified
+         * @param {*} value1
+         * @param {*} value2
+         * @returns {boolean}
+         */
+        isModified(value1, value2) {
+            return !XP.isEquivalent(value1, value2);
+        },
+
+        /**
+         * Returns `true` if the provided `value` is truthy.
+         *
+         * @method isTruthy
+         * @param {*} value
+         * @returns {boolean}
+         */
+        isTruthy(value) {
+            return XP.isTruthy(value);
         },
 
         /*********************************************************************/

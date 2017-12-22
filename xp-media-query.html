@@ -140,7 +140,7 @@ It can be used in conjunction with [xp-media-queries](https://expandjs.com/compo
             // OBSERVER
             _queryChanged(post) {
 
-                // Unlistening
+                // Removing listeners
                 if (this.matcher) { this.matcher.removeListener(this._handleQuery); }
 
                 // Ensuring

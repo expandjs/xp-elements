@@ -7,14 +7,14 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-A web component used to improve the standard HTML form with XHR and validation capabilities.
+A web component used to improve the standard HTML form.
 
 It should be used in conjunction with custom inputs which have [xp-input-behavior](https://expandjs.com/components/xp-input-behavior).
 
 @element xp-form
 @since 1.0.0
 @category containers
-@description A web component used to improve the standard HTML form with XHR and validation capabilities
+@description A web component used to improve the standard HTML form
 @keywords expandjs, web components
 
 @homepage https://expandjs.com/components/xp-form
@@ -26,7 +26,6 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
-<link rel="import" href="xp-request.html">
 <link rel="import" href="xp-targeter-behavior.html">
 
 <dom-module id="xp-form">
@@ -38,12 +37,6 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
                 display: block;
             }
         </style>
-
-        <xp-request headers="[[headers]]" hostname="[[hostname]]" keep-alive="[[keepAlive]]" method="[[form.method]]"
-                    parser="[[parser]]" path="[[path]]" port="[[port]]" protocol="[[protocol]]" state="{{state}}"
-                    url="[[form.action]]" on-xp-request-chunk="_handleStop" on-xp-request-data="_handleRefire"
-                    on-xp-request-error="_handleRefire" on-xp-request-response="_handleStop"
-                    on-xp-request-state="_handleStop" on-xp-request-submit="_handleStop"></xp-request>
 
         <slot></slot>
 
@@ -101,20 +94,44 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
             /*********************************************************************/
 
             /**
+             * Finds a form's input matching `selector`.
+             *
+             * @method findInput
+             * @param {string} selector
+             * @returns {Element}
+             */
+            findInput(selector) {
+
+                // Finding
+                let input = this.inputs.find(input => XP.matches(input.adapter || input, selector));
+
+                // Returning
+                return input ? input.adapter || input : null;
+            },
+
+            /**
              * Parses the form's inputs.
              *
              * @method parse
+             * @param {Object} [options]
+             *   @param {boolean} [options.disabled = false]
              * @param {Function} [callback]
              * @returns {Object}
              */
-            parse(callback) {
+            parse(options, callback) {
+
+                // Preparing
+                if (XP.isFunction(options)) { callback = options; options = undefined; }
 
                 // Asserting
-                XP.assertArgument(XP.isVoid(callback) || XP.isFunction(callback), 1, 'Function');
+                XP.assertArgument(XP.isVoid(options) || XP.isObject(options), 1, 'Object');
+                XP.assertArgument(XP.isVoid(callback) || XP.isFunction(callback), 2, 'Function');
 
-                // Let
-                let data = XP.cloneDeep(this.data || {}),
-                    form = XP.formData(Polymer.dom(this.form));
+                // Cloning
+                let data = XP.cloneDeep(this.data || {});
+
+                // Parsing
+                let form = XP.formData(Polymer.dom(this.form), options && options.disabled);
 
                 // Merging
                 if (this.form) { XP.merge(data, form); }
@@ -141,22 +158,23 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
             },
 
             /**
-             * Submits the form's data through XHR.
+             * Submits the form's data.
              *
              * @method submit
              */
             submit() {
 
-                // Let
-                let target = this.target ? this.findTarget() : this.request,
-                    input  = this.validate(),
-                    data   = this.parse();
+                // Validating
+                let input = this.validate();
+
+                // Preventing
+                if (input) { this.fire('xp-form-invalid', {input}); return; }
 
                 // Firing
-                this.fire(input ? 'xp-form-invalid' : 'xp-form-submit', input ? {input: input} : {data: data});
+                let event = this.fire('xp-form-submit', {data: this.parse()});
 
                 // Submitting
-                if (target && !input) { target.submit(data); }
+                if (this.form && this.form.action && !event.defaultPrevented) { this.form.submit(); }
             },
 
             /**
@@ -171,12 +189,14 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
                 // Asserting
                 XP.assertArgument(XP.isVoid(callback) || XP.isFunction(callback), 1, 'Function');
 
-                // Let
-                let validity = !!this.form && !this.form.noValidate && this.inputs.forEach(input => input.adapter && input.adapter.validate()),
-                    input    = !!this.form && !this.form.noValidate && this.inputs.find(input => XP.isInvalidInput(input));
+                // Validating
+                if (this.form && !this.form.noValidate) { this.inputs.forEach(input => input.adapter && input.adapter.validate()); }
+
+                // Finding
+                let input = this.form && !this.form.noValidate && this.inputs.find(input => XP.isInvalidInput(input));
 
                 // Ensuring
-                this.ensure('invalid', !!input);
+                this.ensure('invalid', Boolean(input));
 
                 // Scrolling
                 if (input && input.scrollIntoViewIfNeeded) { input.scrollIntoViewIfNeeded(); }
@@ -185,7 +205,7 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
                 if (input) { input.focus(); }
 
                 // Callback
-                if (callback) { callback(input); }
+                if (callback) { callback(input || null); }
 
                 // Returning
                 return input;
@@ -197,7 +217,6 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
             listeners: {
                 'change': '_handleChange',
                 'input': '_handleChange',
-                'submit': '_handleSubmit',
                 'xp-input-change': '_handleChange'
             },
 
@@ -393,14 +412,7 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
             _handleChange() {
 
                 // Validating
-                this.wait(() => this.ensure('invalid', !!this.form && !this.form.noValidate && this.inputs.some(input => XP.isInvalidInput(input))));
-            },
-
-            // HANDLER
-            _handleRefire(event) {
-
-                // Refiring
-                this.refire(event, event.type.replace('xp-request-', 'xp-form-'));
+                this.wait(() => this.ensure('invalid', Boolean(this.form && !this.form.noValidate && this.inputs.some(input => XP.isInvalidInput(input)))));
             },
 
             // HANDLER
@@ -408,16 +420,6 @@ It should be used in conjunction with custom inputs which have [xp-input-behavio
 
                 // Stopping
                 event.stopPropagation();
-            },
-
-            // HANDLER
-            _handleSubmit(event) {
-
-                // Preventing
-                event.preventDefault();
-
-                // Overriding
-                this.submit();
             }
         });
     </script>
